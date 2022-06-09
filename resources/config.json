@@ -1,0 +1,16 @@
+{
+  "apps" : {
+    "name" : "watchcommerce",
+    "httpPort" : 8000
+  },
+  "database" : {
+    "host" : "localhost",
+    "username" : "commerce",
+    "password" : "commerce",
+    "port" : 5432,
+    "name" : "watchcommerce",
+    "minIdleConnections": 5,
+    "maxOpenConnections": 30,
+    "connMaxLifeTime": 300
+  }
+}

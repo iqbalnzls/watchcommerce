@@ -2,9 +2,9 @@ package config
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"os"
-	"time"
 )
 
 type Config struct {
@@ -14,18 +14,22 @@ type Config struct {
 
 type AppsConfig struct {
 	Name     string `json:"name"`
-	HttpPort string `json:"httpPort"`
+	HttpPort int    `json:"httpPort"`
+}
+
+func (a *AppsConfig) GetAppAddress() string {
+	return fmt.Sprintf(":%d", a.HttpPort)
 }
 
 type DatabaseConfig struct {
-	Host               string        `json:"host"`
-	Username           string        `json:"username"`
-	Password           string        `json:"password"`
-	Port               int           `json:"port"`
-	Name               string        `json:"name"`
-	MinIdleConnections int           `json:"minIdleConnections"`
-	MaxOpenConnections int           `json:"maxOpenConnections"`
-	ConnMaxLifeTime    time.Duration `json:"connMaxLifeTime"`
+	Host               string `json:"host"`
+	Username           string `json:"username"`
+	Password           string `json:"password"`
+	Port               int    `json:"port"`
+	Name               string `json:"name"`
+	MinIdleConnections int    `json:"minIdleConnections"`
+	MaxOpenConnections int    `json:"maxOpenConnections"`
+	ConnMaxLifeTime    int64  `json:"connMaxLifeTime"`
 }
 
 func NewConfig(path string) (config *Config) {

@@ -3,10 +3,11 @@ package database
 import (
 	"database/sql"
 	"fmt"
+	"time"
 
 	_ "github.com/lib/pq"
 
-	"github.com/iqbalnzls/watchcommerce/src/shared/config"
+	"github.com/iqbalnzls/watchcommerce/src/pkg/config"
 )
 
 func NewDatabase(config *config.DatabaseConfig) *sql.DB {
@@ -15,7 +16,6 @@ func NewDatabase(config *config.DatabaseConfig) *sql.DB {
 	if err != nil {
 		panic(err)
 	}
-	defer db.Close()
 
 	if err = db.Ping(); err != nil {
 		panic(err)
@@ -23,7 +23,7 @@ func NewDatabase(config *config.DatabaseConfig) *sql.DB {
 
 	db.SetMaxOpenConns(config.MaxOpenConnections)
 	db.SetMaxIdleConns(config.MinIdleConnections)
-	db.SetConnMaxLifetime(config.ConnMaxLifeTime)
+	db.SetConnMaxLifetime(time.Duration(config.ConnMaxLifeTime) * time.Second)
 
 	return db
 }
