@@ -38,11 +38,11 @@ func (r *productRepo) Save(domain *domainProduct.Product) (err error) {
 
 func (r *productRepo) GetByID(id int64) (domain *domainProduct.Product, err error) {
 	var (
-		query   = `SELECT id, brand_id, name, price, created_at, updated_at, quantity FROM commerce.product WHERE id = $1`
+		query   = `SELECT id, brand_id, name, price, quantity, created_at, updated_at FROM commerce.product WHERE id = $1`
 		product domainProduct.Product
 	)
 
-	if err = r.db.QueryRow(query, id).Scan(&product.ID, &product.BrandID, &product.Name, &product.Price, &product.CreatedAt, &product.UpdatedAt, &product.Quantity); err != nil {
+	if err = r.db.QueryRow(query, id).Scan(&product.ID, &product.BrandID, &product.Name, &product.Price, &product.Quantity, &product.CreatedAt, &product.UpdatedAt); err != nil {
 		utils.Error(err)
 		if err == sql.ErrNoRows {
 			err = errors.New(constant.ErrorDataNotFound)
@@ -58,7 +58,7 @@ func (r *productRepo) GetByID(id int64) (domain *domainProduct.Product, err erro
 }
 
 func (r *productRepo) GetByBrandID(brandID int64) (domains []*domainProduct.Product, err error) {
-	var query = `SELECT id, brand_id, name, price, created_at, updated_at, quantity FROM commerce.product WHERE brand_id = $1`
+	var query = `SELECT id, brand_id, name, price, quantity, created_at, updated_at FROM commerce.product WHERE brand_id = $1`
 
 	rows, err := r.db.Query(query, brandID)
 	if err != nil {
@@ -69,7 +69,7 @@ func (r *productRepo) GetByBrandID(brandID int64) (domains []*domainProduct.Prod
 
 	for rows.Next() {
 		var domain domainProduct.Product
-		if err = rows.Scan(&domain.ID, &domain.BrandID, &domain.Name, &domain.Price, &domain.CreatedAt, &domain.UpdatedAt, &domain.Quantity); err != nil {
+		if err = rows.Scan(&domain.ID, &domain.BrandID, &domain.Name, &domain.Price, &domain.Quantity, &domain.CreatedAt, &domain.UpdatedAt); err != nil {
 			utils.Error(err)
 			err = errors.New(constant.ErrorDatabaseProblem)
 			return
