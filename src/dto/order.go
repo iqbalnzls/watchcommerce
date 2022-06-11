@@ -1,7 +1,7 @@
 package dto
 
 type CreateOrderRequest struct {
-	OrderDetails []OrderDetailsRequest `json:"orderDetails,dive"`
+	OrderDetails []OrderDetailsRequest `json:"orderDetails" validate:"dive"`
 }
 
 type OrderDetailsRequest struct {

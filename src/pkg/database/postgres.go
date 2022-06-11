@@ -11,7 +11,7 @@ import (
 )
 
 func NewDatabase(config *config.DatabaseConfig) *sql.DB {
-	psqlInfo := fmt.Sprintf("host=%s port=%d password=%s dbname=%s sslmode=disable", config.Host, config.Port, config.Password, config.Name)
+	psqlInfo := fmt.Sprintf("postgres://%v:%v@%v:%v/%v?sslmode=disable", config.Username, config.Password, config.Host, config.Port, config.Name)
 	db, err := sql.Open("postgres", psqlInfo)
 	if err != nil {
 		panic(err)

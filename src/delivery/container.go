@@ -11,7 +11,7 @@ import (
 )
 
 type Container struct {
-	BrandService   usecaseBrand.BrandServicaIFace
+	BrandService   usecaseBrand.BrandServiceIFace
 	ProductService usecaseProduct.ProductServiceIFace
 	OrderService   usecaseOrder.OrderServiceIFace
 	Config         *config.Config
@@ -19,11 +19,11 @@ type Container struct {
 }
 
 func SetupContainer() *Container {
-	//ini config
+	//init config
 	cfg := config.NewConfig("./resources/config.json")
 
 	//init validator
-	validator := validator.NewValidator()
+	v := validator.NewValidator()
 
 	//init database
 	db := database.NewDatabase(&cfg.Database)
@@ -44,6 +44,6 @@ func SetupContainer() *Container {
 		ProductService: productService,
 		OrderService:   orderService,
 		Config:         cfg,
-		Validator:      validator,
+		Validator:      v,
 	}
 }

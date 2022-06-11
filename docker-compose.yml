@@ -1,0 +1,28 @@
+version: "3.9"
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: watchcommerce_app
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./resources/config.json:/app/resources/config.json
+  postgres:
+    image: postgres:14.1-alpine
+    container_name: watchcommerce_db
+    environment:
+      - POSTGRES_DB=watchcommerce
+      - POSTGRES_USER=commerce
+      - POSTGRES_PASSWORD=commerce
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U pixel" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5

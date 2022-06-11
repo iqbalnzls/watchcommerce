@@ -16,10 +16,11 @@ func toProductDomain(d *dto.CreateProductRequest) *domainProduct.Product {
 
 func toGetProductResponse(d *domainProduct.Product) dto.GetProductResponse {
 	return dto.GetProductResponse{
-		ID:      d.ID,
-		Name:    d.Name,
-		BrandID: d.BrandID,
-		Price:   d.Price,
+		ID:       d.ID,
+		Name:     d.Name,
+		BrandID:  d.BrandID,
+		Price:    d.Price,
+		Quantity: d.Quantity,
 	}
 }
 

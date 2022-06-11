@@ -1,9 +1,11 @@
+CREATE DATABASE watchcommerce;
+
 CREATE SCHEMA commerce;
 
 -- table brand
 CREATE TABLE commerce."brand"
 (
-    id         bigserial NOT NULL,
+    id         bigserial    NOT NULL,
     name       varchar(255) NULL,
     created_at timestamptz DEFAULT now(),
     updated_at timestamptz DEFAULT now(),
@@ -55,10 +57,3 @@ CREATE INDEX index_order_details_order_id ON commerce."order_details" (order_id)
 
 CREATE
 USER commerce WITH PASSWORD 'commerce';
-
-GRANT
-ALL
-PRIVILEGES
-ON
-DATABASE
-watchcommerce TO commerce;

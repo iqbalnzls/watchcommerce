@@ -3,17 +3,17 @@ package validator
 import "gopkg.in/go-playground/validator.v9"
 
 type DataValidator struct {
-	ValidatorData *validator.Validate
+	validator *validator.Validate
 }
 
 func NewValidator() *DataValidator {
-	v := &DataValidator{ValidatorData: validator.New()}
-
-	return v
+	return &DataValidator{
+		validator: validator.New(),
+	}
 }
 
 func (v *DataValidator) Validate(i interface{}) (err error) {
-	if err = v.ValidatorData.Struct(i); err != nil {
+	if err = v.validator.Struct(i); err != nil {
 		return
 	}
 

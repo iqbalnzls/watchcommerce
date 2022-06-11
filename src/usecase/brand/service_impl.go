@@ -9,7 +9,7 @@ type service struct {
 	brandRepo brand.BrandRepositoryIFace
 }
 
-func NewBrandService(brandRepo brand.BrandRepositoryIFace) BrandServicaIFace {
+func NewBrandService(brandRepo brand.BrandRepositoryIFace) BrandServiceIFace {
 	if brandRepo == nil {
 		panic("brand repository is nil")
 	}

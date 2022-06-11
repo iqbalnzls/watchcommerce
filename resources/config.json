@@ -4,7 +4,7 @@
     "httpPort" : 8000
   },
   "database" : {
-    "host" : "localhost",
+    "host" : "postgres",
     "username" : "commerce",
     "password" : "commerce",
     "port" : 5432,

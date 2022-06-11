@@ -145,7 +145,7 @@ func Test_orderRepo_Save(t *testing.T) {
 				name: "error database",
 				args: args{
 					resp: resp{
-						err: errors.New("errror database"),
+						err: errors.New("error database"),
 					},
 				},
 				wantErr: errors.New(constant.ErrorDatabaseProblem),

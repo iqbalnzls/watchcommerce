@@ -10,9 +10,10 @@ func (e AppError) Error() string {
 }
 
 const (
-	ErrorDatabaseProblem   = "error database problem"
+	ErrorDatabaseProblem   = "database problem"
 	ErrorInvalidHttpMethod = "invalid http method"
-	ErrorBadRequest        = "error bad request"
-	ErrorDataNotFound      = "error data not found"
+	ErrorBadRequest        = "bad request"
+	ErrorDataNotFound      = "data not found"
 	ErrorStockNotAvailable = "stock is not available"
+	ErrorProductNotFound   = "product not found"
 )

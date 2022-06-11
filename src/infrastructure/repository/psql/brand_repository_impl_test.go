@@ -25,7 +25,7 @@ func TestNewRepositoryBrand(t *testing.T) {
 		wantPanic bool
 	}{
 		{
-			name:      "db connention is nil",
+			name:      "db connection is nil",
 			wantPanic: true,
 		},
 		{

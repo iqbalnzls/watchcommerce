@@ -13,13 +13,16 @@ import (
 )
 
 type brandHandler struct {
-	brandService serviceBrand.BrandServicaIFace
+	brandService serviceBrand.BrandServiceIFace
 	*validator.DataValidator
 }
 
-func NewBrandHandler(brandService serviceBrand.BrandServicaIFace, v *validator.DataValidator) *brandHandler {
+func NewBrandHandler(brandService serviceBrand.BrandServiceIFace, v *validator.DataValidator) *brandHandler {
 	if brandService == nil {
 		panic("brand service is nil")
+	}
+	if v == nil {
+		panic("validator is nil")
 	}
 	return &brandHandler{
 		brandService:  brandService,
