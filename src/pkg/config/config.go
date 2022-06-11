@@ -47,8 +47,5 @@ func NewConfig(path string) (config *Config) {
 		panic(err)
 	}
 
-	by, _ := json.MarshalIndent(config, "", " ")
-	fmt.Println(string(by))
-
 	return
 }
