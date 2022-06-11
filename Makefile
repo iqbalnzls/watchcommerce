@@ -1,4 +1,4 @@
-.Phony: test build stop mock
+.Phony: test run stop mock
 
 test:
 	@echo "=================================================================================="
@@ -11,7 +11,7 @@ test:
 	@echo "=================================================================================="
 	go tool cover -func coverage.cov
 
-build:
+run:
 	docker-compose up --build -d
 
 stop:
