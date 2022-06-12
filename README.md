@@ -1,9 +1,7 @@
 # watchcommerce
 
-watchcommerce is a simple crud functionality for "mini" e-commerce that focus on watch like its name
+watchcommerce is a simple CRUD project which has some functionality such as the following,  
 
-## Features
-There are some functionality that can be done, like 
 
 - **Create Brand** `/api/v1/brand/save`
     
@@ -16,7 +14,6 @@ There are some functionality that can be done, like
                   "name" : "rolex"
     }'
     ```
-
 
 
 - **Create Product** `/api/v1/product/save`
@@ -52,7 +49,7 @@ There are some functionality that can be done, like
   
 - **Create Order** `/api/v1/order/save`
 
-    API to make a transaction/order
+    API to make an order
 
     ```sh
     curl --location --request POST 'localhost:8000/api/v1/order/save' \
@@ -73,7 +70,7 @@ There are some functionality that can be done, like
   
 - **Get Order** (`/api/v1/order/get`)
 
-    API to get a transaction/order that has been done
+    API to get an order that has been done
 
     ```sh
     curl --location --request GET 'localhost:8000/api/v1/order/get?id=1'
@@ -83,24 +80,24 @@ There are some functionality that can be done, like
 ## How to run ?
 
 
-- Make sure u have in the project directory, then just type the following command in ur terminal
+- Make sure you're in the project directory, then just type the following command in your terminal
 
     ```sh
     make run
     ```
   
-    Then, u have to execute the `watchcommerce.sql` in the migrations directory in the postgres container. To do this, first, type the following command
+    Then, you've to execute the `watchcommerce.sql` in the migrations directory in the postgres container. To do this, first, type the following command
 
     ```sh
     docker exec -it watchcommerce_db psql -U commerce -W watchcommerce
     ```
   
-    After that, u can execute the sql
+    After that, you can execute the sql
 
 
 
 
-- U can stop the container by
+- You can stop the container by
 
     ```sh
     make stop

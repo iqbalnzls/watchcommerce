@@ -144,7 +144,7 @@ func Test_orderService_Get(t *testing.T) {
 				wantErr: true,
 			},
 			{
-				name: "call GetByOrderID func error",
+				name: "get order success",
 				args: args{
 					resp: resp{
 						orderRepo: orderRepo{
@@ -254,27 +254,6 @@ func Test_orderService_Save(t *testing.T) {
 						productRepo: productRepo{
 							getByID: getByID{
 								err: errors.New(constant.ErrorDatabaseProblem),
-							},
-						},
-					},
-					req: &dto.CreateOrderRequest{
-						OrderDetails: []dto.OrderDetailsRequest{
-							{
-								ProductID: 1,
-								Quantity:  2,
-							},
-						},
-					},
-				},
-				wantErr: true,
-			},
-			{
-				name: "error database when look up product",
-				args: args{
-					resp: resp{
-						productRepo: productRepo{
-							getByID: getByID{
-								err: errors.New(constant.ErrorDataNotFound),
 							},
 						},
 					},

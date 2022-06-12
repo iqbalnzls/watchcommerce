@@ -45,10 +45,6 @@ func (s *orderService) Save(req *dto.CreateOrderRequest) (err error) {
 	for _, order := range req.OrderDetails {
 		product, er := s.productRepo.GetByID(order.ProductID)
 		if er != nil {
-			if er.Error() == constant.ErrorDataNotFound {
-				err = errors.New(constant.ErrorProductNotFound)
-				return
-			}
 			return er
 		}
 		if order.Quantity > product.Quantity {
