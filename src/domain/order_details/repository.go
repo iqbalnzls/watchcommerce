@@ -1,6 +1,8 @@
 package order_details
 
+import "database/sql"
+
 type OrderDetailsRepositoryIFace interface {
-	SaveBulk(orderID int64, domains []OrderDetails) (err error)
+	SaveBulkWithDBTrx(tx *sql.Tx, orderID int64, domains []OrderDetails) (err error)
 	GetByOrderID(orderID int64) (domains []*OrderDetails, err error)
 }

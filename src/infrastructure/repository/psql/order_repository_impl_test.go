@@ -119,7 +119,7 @@ func Test_orderRepo_Get(t *testing.T) {
 	}
 }
 
-func Test_orderRepo_Save(t *testing.T) {
+func Test_orderRepo_SaveWithDBTrx(t *testing.T) {
 	type resp struct {
 		err  error
 		rows *sqlmock.Rows
@@ -169,15 +169,103 @@ func Test_orderRepo_Save(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			r := psql.NewOrderRepository(db)
+
+			mock.ExpectBegin()
 			if tt.wantErr != nil {
 				mock.ExpectQuery(`^INSERT INTO (.+)order`).WillReturnError(tt.args.resp.err)
 			} else {
 				mock.ExpectQuery(`^INSERT INTO (.+)order`).WithArgs(sqlmock.AnyArg()).WillReturnRows(tt.args.resp.rows)
 			}
 
-			id, err := r.Save(domain)
+			tx, err := db.Begin()
+			assert.NoError(t, err)
+
+			id, err := r.SaveWithDBTrx(tx, domain)
 			assert.Equal(t, tt.wantErr, err)
 			assert.Equal(t, tt.wantId, id)
+		})
+	}
+}
+
+func Test_orderRepo_BeginDBTrx(t *testing.T) {
+	var (
+		tests = []struct {
+			name string
+		}{
+			{
+				name: "success",
+			},
+		}
+	)
+
+	db, mock, err := sqlmock.New()
+	assert.NoError(t, err)
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			mock.ExpectBegin()
+
+			r := psql.NewOrderRepository(db)
+			_, err := r.BeginDBTrx()
+			assert.NoError(t, err)
+		})
+	}
+}
+
+func Test_orderRepo_CommitDBTrx(t *testing.T) {
+	var (
+		tests = []struct {
+			name string
+		}{
+			{
+				name: "success",
+			},
+		}
+	)
+
+	db, mock, err := sqlmock.New()
+	assert.NoError(t, err)
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			mock.ExpectBegin()
+			mock.ExpectCommit()
+
+			tx, err := db.Begin()
+			assert.NoError(t, err)
+
+			r := psql.NewOrderRepository(db)
+			wantEr := r.CommitDBTrx(tx)
+			assert.NoError(t, wantEr)
+		})
+	}
+}
+
+func Test_orderRepo_RollbackDBTrx(t *testing.T) {
+	var (
+		tests = []struct {
+			name string
+		}{
+			{
+				name: "success",
+			},
+		}
+	)
+
+	db, mock, err := sqlmock.New()
+	assert.NoError(t, err)
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			mock.ExpectBegin()
+			mock.ExpectRollback()
+
+			tx, err := db.Begin()
+			assert.NoError(t, err)
+
+			r := psql.NewOrderRepository(db)
+			err = r.RollbackDBTrx(tx)
+			assert.NoError(t, err)
 		})
 	}
 }

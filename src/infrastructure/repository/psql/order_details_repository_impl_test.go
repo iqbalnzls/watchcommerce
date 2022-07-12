@@ -142,7 +142,7 @@ func Test_orderDetailsRepo_GetByOrderID(t *testing.T) {
 	}
 }
 
-func Test_orderDetailsRepo_SaveBulk(t *testing.T) {
+func Test_orderDetailsRepo_SaveBulkWithDBTrx(t *testing.T) {
 
 	type resp struct {
 		err    error
@@ -190,13 +190,17 @@ func Test_orderDetailsRepo_SaveBulk(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			r := psql.NewOrderDetailsRepository(db)
+			mock.ExpectBegin()
 			if tt.wantErr != nil {
 				mock.ExpectExec(`^INSERT INTO (.+)order_details`).WillReturnError(errors.New("general error"))
 			} else {
 				mock.ExpectExec(`^INSERT INTO (.+)order_details`).WithArgs(sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg()).WillReturnResult(tt.args.resp.result)
 			}
 
-			err := r.SaveBulk(orderID, domains)
+			tx, err := db.Begin()
+			assert.NoError(t, err)
+
+			err = r.SaveBulkWithDBTrx(tx, orderID, domains)
 			assert.Equal(t, tt.wantErr, err)
 		})
 	}

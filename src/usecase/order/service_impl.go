@@ -3,6 +3,8 @@ package order
 import (
 	"errors"
 
+	"golang.org/x/sync/errgroup"
+
 	domainOrder "github.com/iqbalnzls/watchcommerce/src/domain/order"
 	domainOrderDetails "github.com/iqbalnzls/watchcommerce/src/domain/order_details"
 	domainProduct "github.com/iqbalnzls/watchcommerce/src/domain/product"
@@ -63,34 +65,54 @@ func (s *orderService) Save(req *dto.CreateOrderRequest) (err error) {
 		products = append(products, product)
 	}
 
-	id, err := s.orderRepo.Save(&domainOrder.Order{
-		Total: total,
-	})
+	tx, err := s.orderRepo.BeginDBTrx()
 	if err != nil {
 		return
 	}
 
-	if err = s.orderDetailsRepo.SaveBulk(id, orderDetails); err != nil {
+	id, err := s.orderRepo.SaveWithDBTrx(tx, &domainOrder.Order{
+		Total: total,
+	})
+	if err != nil {
+		_ = s.orderRepo.RollbackDBTrx(tx)
+		return
+	}
+
+	if err = s.orderDetailsRepo.SaveBulkWithDBTrx(tx, id, orderDetails); err != nil {
+		_ = s.orderRepo.RollbackDBTrx(tx)
 		return
 	}
 
 	for _, product := range products {
-		if err = s.productRepo.UpdateByQuantity(product.ID, product.Quantity); err != nil {
+		if err = s.productRepo.UpdateByQuantityWithDBTrx(tx, product.ID, product.Quantity); err != nil {
+			_ = s.orderRepo.RollbackDBTrx(tx)
 			return
 		}
 	}
+
+	_ = s.orderRepo.CommitDBTrx(tx)
 
 	return
 }
 
 func (s *orderService) Get(req *dto.GetOrderRequest) (resp dto.GetOrderResponse, err error) {
-	order, err := s.orderRepo.Get(req.OrderID)
-	if err != nil {
-		return
-	}
+	var (
+		eg           = new(errgroup.Group)
+		order        *domainOrder.Order
+		orderDetails []*domainOrderDetails.OrderDetails
+	)
 
-	orderDetails, err := s.orderDetailsRepo.GetByOrderID(order.ID)
-	if err != nil {
+	eg.Go(func() (er error) {
+		order, er = s.orderRepo.Get(req.OrderID)
+		return
+	})
+
+	eg.Go(func() (er error) {
+		orderDetails, er = s.orderDetailsRepo.GetByOrderID(req.OrderID)
+		return
+	})
+
+	if err = eg.Wait(); err != nil {
 		return
 	}
 

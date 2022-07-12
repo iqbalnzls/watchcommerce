@@ -98,7 +98,7 @@ func Test_service_Save(t *testing.T) {
 
 			s := usecaseBrand.NewBrandService(brandRepo)
 			if err := s.Save(req); (err != nil) != tt.wantErr {
-				t.Errorf("Save() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("SaveWithDBTrx() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
 	}

@@ -25,7 +25,7 @@ func NewOrderDetailsRepository(db *sql.DB) domainOrderDetails.OrderDetailsReposi
 	}
 }
 
-func (r *orderDetailsRepo) SaveBulk(orderID int64, domains []domainOrderDetails.OrderDetails) (err error) {
+func (r *orderDetailsRepo) SaveBulkWithDBTrx(tx *sql.Tx, orderID int64, domains []domainOrderDetails.OrderDetails) (err error) {
 	var (
 		values    = make([]string, 0)
 		valueArgs = make([]interface{}, 0)
@@ -37,7 +37,7 @@ func (r *orderDetailsRepo) SaveBulk(orderID int64, domains []domainOrderDetails.
 		valueArgs = append(valueArgs, orderID, v.ProductID, v.Quantity, v.Price)
 	}
 
-	_, err = r.db.Exec(fmt.Sprintf(query, strings.Join(values, ",")), valueArgs...)
+	_, err = tx.Exec(fmt.Sprintf(query, strings.Join(values, ",")), valueArgs...)
 	if err != nil {
 		utils.Error(err)
 		err = errors.New(constant.ErrorDatabaseProblem)

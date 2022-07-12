@@ -3,6 +3,7 @@ package psql
 import (
 	"database/sql"
 	"errors"
+
 	domainOrder "github.com/iqbalnzls/watchcommerce/src/domain/order"
 	"github.com/iqbalnzls/watchcommerce/src/pkg/constant"
 	"github.com/iqbalnzls/watchcommerce/src/pkg/utils"
@@ -22,10 +23,10 @@ func NewOrderRepository(db *sql.DB) domainOrder.OrderRepositoryIFace {
 	}
 }
 
-func (r *orderRepo) Save(domain *domainOrder.Order) (id int64, err error) {
+func (r *orderRepo) SaveWithDBTrx(tx *sql.Tx, domain *domainOrder.Order) (id int64, err error) {
 	var query = `INSERT INTO commerce."order"(total) VALUES($1) RETURNING id`
 
-	if err = r.db.QueryRow(query, domain.Total).Scan(&id); err != nil {
+	if err = tx.QueryRow(query, domain.Total).Scan(&id); err != nil {
 		utils.Error(err)
 		err = errors.New(constant.ErrorDatabaseProblem)
 		return
@@ -51,5 +52,30 @@ func (r *orderRepo) Get(id int64) (domain *domainOrder.Order, err error) {
 
 	domain = &order
 
+	return
+}
+
+func (r *orderRepo) BeginDBTrx() (tx *sql.Tx, err error) {
+	tx, err = r.db.Begin()
+	if err != nil {
+		err = errors.New(constant.ErrorDatabaseProblem)
+		return
+	}
+	return
+}
+
+func (r *orderRepo) CommitDBTrx(tx *sql.Tx) (err error) {
+	if err = tx.Commit(); err != nil {
+		err = errors.New(constant.ErrorDatabaseProblem)
+		return
+	}
+	return
+}
+
+func (r *orderRepo) RollbackDBTrx(tx *sql.Tx) (err error) {
+	if err = tx.Rollback(); err != nil {
+		err = errors.New(constant.ErrorDatabaseProblem)
+		return
+	}
 	return
 }

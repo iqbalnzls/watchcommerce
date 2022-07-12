@@ -87,10 +87,10 @@ func (r *productRepo) GetByBrandID(brandID int64) (domains []*domainProduct.Prod
 	return
 }
 
-func (r *productRepo) UpdateByQuantity(id, quantity int64) (err error) {
+func (r *productRepo) UpdateByQuantityWithDBTrx(tx *sql.Tx, id, quantity int64) (err error) {
 	var query = `UPDATE commerce.product SET quantity = $2, updated_at = now() WHERE id = $1`
 
-	_, err = r.db.Exec(query, id, quantity)
+	_, err = tx.Exec(query, id, quantity)
 	if err != nil {
 		utils.Error(err)
 		err = errors.New(constant.ErrorDatabaseProblem)

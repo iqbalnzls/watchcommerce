@@ -274,7 +274,7 @@ func Test_productService_Save(t *testing.T) {
 
 			s := usecaseProduct.NewProductService(productRepo)
 			if err := s.Save(req); (err != nil) != tt.wantErr {
-				t.Errorf("Save() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("SaveWithDBTrx() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
 	}

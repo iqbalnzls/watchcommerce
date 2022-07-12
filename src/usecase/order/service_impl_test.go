@@ -1,6 +1,7 @@
 package order_test
 
 import (
+	"database/sql"
 	"errors"
 	"reflect"
 	"testing"
@@ -222,8 +223,21 @@ func Test_orderService_Save(t *testing.T) {
 		id  int64
 		err error
 	}
+	type beginBDTrx struct {
+		tx  *sql.Tx
+		err error
+	}
+	type rollbackDBTrx struct {
+		err error
+	}
+	type commitDBTrx struct {
+		err error
+	}
 	type orderRepo struct {
-		save save
+		save          save
+		beginBDTrx    beginBDTrx
+		commitDBTrx   commitDBTrx
+		rollbackDBTrx rollbackDBTrx
 	}
 	type saveBulk struct {
 		err error
@@ -240,6 +254,14 @@ func Test_orderService_Save(t *testing.T) {
 		resp resp
 		req  *dto.CreateOrderRequest
 	}
+
+	//db, mo, err := sqlmock.New()
+	//assert.NoError(t, err)
+	//
+	//mo.ExpectBegin()
+	//
+	//tx, err := db.Begin()
+	//assert.NoError(t, err)
 
 	var (
 		tests = []struct {
@@ -293,6 +315,93 @@ func Test_orderService_Save(t *testing.T) {
 				wantErr: true,
 			},
 			{
+				name: "begin db transaction error",
+				args: args{
+					resp: resp{
+						orderRepo: orderRepo{
+							beginBDTrx: beginBDTrx{
+								err: errors.New(constant.ErrorDatabaseProblem),
+							},
+						},
+						productRepo: productRepo{
+							getByID: getByID{
+								domain: &domainProduct.Product{
+									ID:       1,
+									Quantity: 10,
+								},
+							},
+						},
+					},
+					req: &dto.CreateOrderRequest{
+						OrderDetails: []dto.OrderDetailsRequest{
+							{
+								ProductID: 1,
+								Quantity:  2,
+							},
+						},
+					},
+				},
+				wantErr: true,
+			},
+			{
+				name: "begin db transaction error",
+				args: args{
+					resp: resp{
+						orderRepo: orderRepo{
+							beginBDTrx: beginBDTrx{
+								err: errors.New(constant.ErrorDatabaseProblem),
+							},
+						},
+						productRepo: productRepo{
+							getByID: getByID{
+								domain: &domainProduct.Product{
+									ID:       1,
+									Quantity: 10,
+								},
+							},
+						},
+					},
+					req: &dto.CreateOrderRequest{
+						OrderDetails: []dto.OrderDetailsRequest{
+							{
+								ProductID: 1,
+								Quantity:  2,
+							},
+						},
+					},
+				},
+				wantErr: true,
+			},
+			{
+				name: "begin db transaction error",
+				args: args{
+					resp: resp{
+						orderRepo: orderRepo{
+							beginBDTrx: beginBDTrx{
+								err: errors.New(constant.ErrorDatabaseProblem),
+							},
+						},
+						productRepo: productRepo{
+							getByID: getByID{
+								domain: &domainProduct.Product{
+									ID:       1,
+									Quantity: 10,
+								},
+							},
+						},
+					},
+					req: &dto.CreateOrderRequest{
+						OrderDetails: []dto.OrderDetailsRequest{
+							{
+								ProductID: 1,
+								Quantity:  2,
+							},
+						},
+					},
+				},
+				wantErr: true,
+			},
+			{
 				name: "save order error",
 				args: args{
 					resp: resp{
@@ -305,6 +414,9 @@ func Test_orderService_Save(t *testing.T) {
 							},
 						},
 						orderRepo: orderRepo{
+							beginBDTrx: beginBDTrx{
+								tx: new(sql.Tx),
+							},
 							save: save{
 								err: errors.New(constant.ErrorDatabaseProblem),
 							},
@@ -422,18 +534,21 @@ func Test_orderService_Save(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			productRepo := new(mocksPsql.ProductRepositoryIFaceMock)
 			productRepo.On("GetByID", mock.Anything).Return(tt.args.resp.productRepo.getByID.domain, tt.args.resp.productRepo.getByID.err)
-			productRepo.On("UpdateByQuantity", mock.Anything, mock.Anything).Return(tt.args.resp.productRepo.updateByQuantity.err)
+			productRepo.On("UpdateByQuantityWithDBTrx", mock.Anything, mock.Anything, mock.Anything).Return(tt.args.resp.productRepo.updateByQuantity.err)
 
 			orderRepo := new(mocksPsql.OrderRepositoryIFaceMock)
-			orderRepo.On("Save", mock.Anything).Return(tt.args.resp.orderRepo.save.id, tt.args.resp.orderRepo.save.err)
+			orderRepo.On("SaveWithDBTrx", mock.Anything, mock.Anything).Return(tt.args.resp.orderRepo.save.id, tt.args.resp.orderRepo.save.err)
+			orderRepo.On("BeginDBTrx").Return(tt.args.resp.orderRepo.beginBDTrx.tx, tt.args.resp.orderRepo.beginBDTrx.err)
+			orderRepo.On("RollbackDBTrx", mock.Anything).Return(nil)
+			orderRepo.On("CommitDBTrx", mock.Anything).Return(nil)
 
 			orderDetailsRepo := new(mocksPsql.OrderDetailsRepositoryIFaceMock)
-			orderDetailsRepo.On("SaveBulk", mock.Anything, mock.Anything).Return(tt.args.resp.orderDetailsRepo.saveBulk.err)
+			orderDetailsRepo.On("SaveBulkWithDBTrx", mock.Anything, mock.Anything, mock.Anything).Return(tt.args.resp.orderDetailsRepo.saveBulk.err)
 
 			s := usecaseOrder.NewOrderService(productRepo, orderRepo, orderDetailsRepo)
 
 			if err := s.Save(tt.args.req); (err != nil) != tt.wantErr {
-				t.Errorf("Save() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("SaveWithDBTrx() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
 	}

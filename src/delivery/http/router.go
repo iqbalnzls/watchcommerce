@@ -1,12 +1,20 @@
 package http
 
-import "net/http"
+import (
+	"net/http"
+
+	httpSwagger "github.com/swaggo/http-swagger"
+)
 
 func SetupRouter(mux *http.ServeMux, middleware Middleware, handler *handler) {
 	//health check
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		_, _ = w.Write([]byte("service is up and running..."))
 	})
+
+	mux.HandleFunc("/swagger/", httpSwagger.Handler(
+		httpSwagger.URL("http://localhost:8000/swagger/swagger.json"),
+	))
 
 	//brand
 	mux.HandleFunc("/api/v1/brand/save", middleware(handler.brand.Save))

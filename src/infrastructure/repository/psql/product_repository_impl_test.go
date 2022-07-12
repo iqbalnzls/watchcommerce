@@ -321,13 +321,17 @@ func Test_productRepo_UpdateByQuantity(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			r := psql.NewProductRepository(db)
 
+			mock.ExpectBegin()
 			if tt.wantErr != nil {
 				mock.ExpectExec(`^UPDATE (.+)product`).WillReturnError(tt.args.resp.err)
 			} else {
 				mock.ExpectExec(`^UPDATE (.+)product`).WithArgs(sqlmock.AnyArg(), sqlmock.AnyArg()).WillReturnResult(tt.args.resp.result)
 			}
 
-			err := r.UpdateByQuantity(id, quantity)
+			tx, err := db.Begin()
+			assert.NoError(t, err)
+
+			err = r.UpdateByQuantityWithDBTrx(tx, id, quantity)
 			assert.Equal(t, tt.wantErr, err)
 		})
 	}
