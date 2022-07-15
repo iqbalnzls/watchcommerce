@@ -1,0 +1,289 @@
+basePath: /
+definitions:
+  dto.BaseResponse:
+    properties:
+      data: {}
+      message:
+        example: Success
+        type: string
+      success:
+        example: true
+        type: boolean
+    type: object
+  dto.CreateBrandRequest:
+    properties:
+      name:
+        example: rolex
+        type: string
+    required:
+    - name
+    type: object
+  dto.CreateOrderRequest:
+    properties:
+      orderDetails:
+        items:
+          $ref: '#/definitions/dto.OrderDetailsRequest'
+        type: array
+    type: object
+  dto.CreateProductRequest:
+    properties:
+      brandID:
+        example: 1
+        type: integer
+      name:
+        example: g-shock
+        type: string
+      price:
+        example: 12000000
+        type: integer
+      quantity:
+        example: 10
+        type: integer
+    required:
+    - brandID
+    - name
+    - price
+    - quantity
+    type: object
+  dto.GetOrderResponse:
+    properties:
+      details:
+        items:
+          $ref: '#/definitions/dto.OrderDetailsResponse'
+        type: array
+      id:
+        example: 11
+        type: integer
+      total:
+        example: 10
+        type: integer
+    type: object
+  dto.GetProductResponse:
+    properties:
+      brandID:
+        example: 1
+        type: integer
+      id:
+        example: 1
+        type: integer
+      name:
+        example: daytona
+        type: string
+      price:
+        example: 1000
+        type: integer
+      quantity:
+        example: 3
+        type: integer
+    type: object
+  dto.OrderDetailsRequest:
+    properties:
+      productID:
+        example: 1
+        type: integer
+      quantity:
+        example: 12
+        type: integer
+    required:
+    - productID
+    - quantity
+    type: object
+  dto.OrderDetailsResponse:
+    properties:
+      id:
+        example: 1
+        type: integer
+      orderID:
+        example: 12
+        type: integer
+      price:
+        example: 13400990
+        type: integer
+      productID:
+        example: 4
+        type: integer
+      quantity:
+        example: 3
+        type: integer
+    type: object
+host: localhost:8000
+info:
+  contact:
+    name: API Support
+    url: http://www.swagger.io/support
+  description: This is api documentation for watchcommerce.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Watchcommerce API Documentation
+  version: "1.0"
+paths:
+  /api/v1/brand/save:
+    post:
+      consumes:
+      - application/json
+      description: API for save new brand
+      parameters:
+      - description: payload for save new brand
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateBrandRequest'
+      - description: Authorization for swagger purpose
+        in: header
+        name: Authorization-Swagger
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.BaseResponse'
+      summary: Save brand
+      tags:
+      - Brand
+  /api/v1/order/get:
+    get:
+      description: API for get new order by id
+      parameters:
+      - description: order id
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.BaseResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.GetOrderResponse'
+                message:
+                  type: string
+                success:
+                  type: boolean
+              type: object
+      summary: Get order by id
+      tags:
+      - Order
+  /api/v1/order/save:
+    post:
+      consumes:
+      - application/json
+      description: API for create new order
+      parameters:
+      - description: payload for create new order
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateOrderRequest'
+      - description: Authorization for swagger purpose
+        in: header
+        name: Authorization-Swagger
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.BaseResponse'
+      summary: Create order
+      tags:
+      - Order
+  /api/v1/product/brand/get:
+    get:
+      description: API for get new product by brand id
+      parameters:
+      - description: brand id
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.BaseResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dto.GetProductResponse'
+                  type: array
+                message:
+                  type: string
+                success:
+                  type: boolean
+              type: object
+      summary: Get product by brandID
+      tags:
+      - Product
+  /api/v1/product/get:
+    get:
+      description: API for get new product by id
+      parameters:
+      - description: product id
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.BaseResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.GetProductResponse'
+                message:
+                  type: string
+                success:
+                  type: boolean
+              type: object
+      summary: Get product by id
+      tags:
+      - Product
+  /api/v1/product/save:
+    post:
+      consumes:
+      - application/json
+      description: API for save new product
+      parameters:
+      - description: payload for save new product
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateProductRequest'
+      - description: Authorization for swagger purpose
+        in: header
+        name: Authorization-Swagger
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.BaseResponse'
+      summary: Save product
+      tags:
+      - Product
+swagger: "2.0"

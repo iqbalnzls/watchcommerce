@@ -32,6 +32,16 @@ func NewOrderHandler(orderService usecaseOrder.OrderServiceIFace, v *validator.D
 	}
 }
 
+// Save godoc
+// @Summary Create order
+// @Description API for create new order
+// @Tags Order
+// @Accept json
+// @Produce  json
+// @Param request body dto.CreateOrderRequest true "payload for create new order"
+// @Success 200 {object} dto.BaseResponse
+// @param Authorization-Swagger header string true "Authorization for swagger purpose"
+// @Router /api/v1/order/save [post]
 func (h *orderHandler) Save(w http.ResponseWriter, r *http.Request) {
 	var (
 		req      *dto.CreateOrderRequest
@@ -74,6 +84,14 @@ func (h *orderHandler) Save(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
+// Get godoc
+// @Summary Get order by id
+// @Description API for get new order by id
+// @Tags Order
+// @Produce  json
+// @Param id query string true "order id"
+// @Success 200 {object} dto.BaseResponse{data=dto.GetOrderResponse,success=bool,message=string}
+// @Router /api/v1/order/get [get]
 func (h *orderHandler) Get(w http.ResponseWriter, r *http.Request) {
 	var (
 		baseResp dto.BaseResponse

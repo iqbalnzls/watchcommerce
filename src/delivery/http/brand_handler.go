@@ -30,6 +30,16 @@ func NewBrandHandler(brandService serviceBrand.BrandServiceIFace, v *validator.D
 	}
 }
 
+// Save godoc
+// @Summary Save brand
+// @Description API for save new brand
+// @Tags Brand
+// @Accept json
+// @Produce  json
+// @Param request body dto.CreateBrandRequest true "payload for save new brand"
+// @Success 200 {object} dto.BaseResponse
+// @param Authorization-Swagger header string true "Authorization for swagger purpose"
+// @Router /api/v1/brand/save [post]
 func (h *brandHandler) Save(w http.ResponseWriter, r *http.Request) {
 	var (
 		req      *dto.CreateBrandRequest

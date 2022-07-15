@@ -12,9 +12,7 @@ func SetupRouter(mux *http.ServeMux, middleware Middleware, handler *handler) {
 		_, _ = w.Write([]byte("service is up and running..."))
 	})
 
-	mux.HandleFunc("/swagger/", httpSwagger.Handler(
-		httpSwagger.URL("http://localhost:8000/swagger/swagger.json"),
-	))
+	mux.HandleFunc("/swagger/", httpSwagger.WrapHandler)
 
 	//brand
 	mux.HandleFunc("/api/v1/brand/save", middleware(handler.brand.Save))

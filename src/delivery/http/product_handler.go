@@ -32,6 +32,16 @@ func NewProductHandler(productService usecaseProduct.ProductServiceIFace, v *val
 	}
 }
 
+// Save godoc
+// @Summary Save product
+// @Description API for save new product
+// @Tags Product
+// @Accept json
+// @Produce  json
+// @Param request body dto.CreateProductRequest true "payload for save new product"
+// @Success 200 {object} dto.BaseResponse
+// @param Authorization-Swagger header string true "Authorization for swagger purpose"
+// @Router /api/v1/product/save [post]
 func (h *productHandler) Save(w http.ResponseWriter, r *http.Request) {
 	var (
 		req      *dto.CreateProductRequest
@@ -74,6 +84,14 @@ func (h *productHandler) Save(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
+// Get godoc
+// @Summary Get product by id
+// @Description API for get new product by id
+// @Tags Product
+// @Produce  json
+// @Param id query string true "product id"
+// @Success 200 {object} dto.BaseResponse{data=dto.GetProductResponse,success=bool,message=string}
+// @Router /api/v1/product/get [get]
 func (h *productHandler) Get(w http.ResponseWriter, r *http.Request) {
 	var (
 		baseResp dto.BaseResponse
@@ -116,6 +134,14 @@ func (h *productHandler) Get(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
+// GetByBrandID godoc
+// @Summary Get product by brandID
+// @Description API for get new product by brand id
+// @Tags Product
+// @Produce  json
+// @Param id query string true "brand id"
+// @Success 200 {object} dto.BaseResponse{data=[]dto.GetProductResponse,success=bool,message=string}
+// @Router /api/v1/product/brand/get [get]
 func (h *productHandler) GetByBrandID(w http.ResponseWriter, r *http.Request) {
 	var (
 		baseResp dto.BaseResponse
