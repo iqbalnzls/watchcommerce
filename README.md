@@ -111,7 +111,7 @@ watchcommerce is a simple CRUD project which has some functionality such as the 
     make test
     ```
   
-- To open swagger ui
+- To open swagger ui // test
   
     ```sh
     http://localhost:8000/swagger/index.html#/
