@@ -5,6 +5,7 @@ import (
 
 	_ "github.com/iqbalnzls/watchcommerce/docs"
 	"github.com/iqbalnzls/watchcommerce/src/delivery"
+	inGraphQL "github.com/iqbalnzls/watchcommerce/src/delivery/graph"
 	inHttp "github.com/iqbalnzls/watchcommerce/src/delivery/http"
 )
 
@@ -24,5 +25,9 @@ import (
 func main() {
 	mux := http.NewServeMux()
 
-	inHttp.StartHttpService(mux, delivery.SetupContainer())
+	container := delivery.SetupContainer()
+
+	go inGraphQL.StartGraphQLService(mux, container)
+
+	inHttp.StartHttpService(mux, container)
 }

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"strconv"
 )
 
 type Config struct {
@@ -13,12 +14,17 @@ type Config struct {
 }
 
 type AppsConfig struct {
-	Name     string `json:"name"`
-	HttpPort int    `json:"httpPort"`
+	Name        string `json:"name"`
+	HttpPort    int    `json:"httpPort"`
+	GraphQLPort int    `json:"graphQLPort"`
 }
 
 func (a *AppsConfig) GetAppAddress() string {
 	return fmt.Sprintf(":%d", a.HttpPort)
+}
+
+func (a *AppsConfig) GetGraphQLAddress() string {
+	return ":" + strconv.Itoa(a.GraphQLPort)
 }
 
 type DatabaseConfig struct {

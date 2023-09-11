@@ -1,7 +1,8 @@
 {
   "apps" : {
     "name" : "watchcommerce",
-    "httpPort" : 8000
+    "httpPort" : 8000,
+    "graphQLPort": 9221
   },
   "database" : {
     "host" : "localhost",
