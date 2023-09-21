@@ -18,7 +18,7 @@ type productHandler struct {
 	*validator.DataValidator
 }
 
-func NewProductHandler(productService usecaseProduct.ProductServiceIFace, v *validator.DataValidator) *productHandler {
+func NewProductHandler(productService usecaseProduct.ProductServiceIFace, v *validator.DataValidator) ProductHandlerIFace {
 	if productService == nil {
 		panic("product service is nil")
 	}

@@ -18,7 +18,7 @@ type orderHandler struct {
 	*validator.DataValidator
 }
 
-func NewOrderHandler(orderService usecaseOrder.OrderServiceIFace, v *validator.DataValidator) *orderHandler {
+func NewOrderHandler(orderService usecaseOrder.OrderServiceIFace, v *validator.DataValidator) OrderHandlerIFace {
 	if orderService == nil {
 		panic("order service is nil")
 	}

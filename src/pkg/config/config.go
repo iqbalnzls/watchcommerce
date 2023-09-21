@@ -19,7 +19,7 @@ type AppsConfig struct {
 	GraphQLPort int    `json:"graphQLPort"`
 }
 
-func (a *AppsConfig) GetAppAddress() string {
+func (a *AppsConfig) GetHttpAddress() string {
 	return fmt.Sprintf(":%d", a.HttpPort)
 }
 

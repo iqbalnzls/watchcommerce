@@ -1,12 +1,12 @@
 package brand
 
 import (
-	"github.com/iqbalnzls/watchcommerce/src/domain/brand"
+	"github.com/iqbalnzls/watchcommerce/src/domain"
 	"github.com/iqbalnzls/watchcommerce/src/dto"
 )
 
-func toBrandDomain(d *dto.CreateBrandRequest) *brand.Brand {
-	return &brand.Brand{
+func toBrandDomain(d *dto.CreateBrandRequest) *domain.Brand {
+	return &domain.Brand{
 		Name: d.Name,
 	}
 }

@@ -12,11 +12,11 @@ import (
 	"github.com/iqbalnzls/watchcommerce/src/delivery"
 )
 
-func StartHttpService(mux *http.ServeMux, container *delivery.Container) {
+func StartHttpServer(mux *http.ServeMux, container *delivery.Container) {
 	SetupRouter(mux, SetupMiddleware(), SetupHandler(container))
 
 	srv := http.Server{
-		Addr:    container.Config.Apps.GetAppAddress(),
+		Addr:    container.Config.Apps.GetHttpAddress(),
 		Handler: mux,
 	}
 
@@ -28,10 +28,10 @@ func StartHttpService(mux *http.ServeMux, container *delivery.Container) {
 			log.Fatalf("listen: %s\n", err)
 		}
 	}()
-	log.Print("Server Started on Port : ", container.Config.Apps.HttpPort)
+	log.Print("Http Server Started on Port : ", container.Config.Apps.HttpPort)
 
 	<-done
-	log.Print("Server Stopped")
+	log.Print("Http Server Stopped")
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer func() {
@@ -43,6 +43,6 @@ func StartHttpService(mux *http.ServeMux, container *delivery.Container) {
 		log.Fatalf("Server Shutdown Failed:%+v", err)
 	}
 
-	log.Print("Server Exited Properly")
+	log.Print("Http Server Exited Properly")
 
 }

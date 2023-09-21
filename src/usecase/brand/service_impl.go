@@ -1,8 +1,8 @@
 package brand
 
 import (
-	"github.com/iqbalnzls/watchcommerce/src/domain/brand"
 	"github.com/iqbalnzls/watchcommerce/src/dto"
+	"github.com/iqbalnzls/watchcommerce/src/infrastructure/repository/psql/brand"
 )
 
 type service struct {

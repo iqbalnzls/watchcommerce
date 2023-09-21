@@ -21,21 +21,21 @@ import (
 
 func TestSetupRouter(t *testing.T) {
 	var (
+		v              = validator.NewValidator()
 		brandService   = &mocksUsecaseBrand.BrandServiceIFaceMock{}
 		productService = &mocksUsecaseProduct.ProductServiceIFaceMock{}
 		orderService   = &mocks.OrderServiceIFaceMock{}
 		container      = &delivery.Container{
+			OrderService:   orderService,
 			BrandService:   brandService,
 			ProductService: productService,
-			OrderService:   orderService,
-			Validator:      validator.NewValidator(),
+			Validator:      v,
 		}
 		mux        = http.NewServeMux()
 		middleware = inHttp.SetupMiddleware()
-		handler    = inHttp.SetupHandler(container)
 	)
 
-	inHttp.SetupRouter(mux, middleware, handler)
+	inHttp.SetupRouter(mux, middleware, inHttp.SetupHandler(container))
 
 	t.Run("route without middleware", func(t *testing.T) {
 		req, err := http.NewRequest(http.MethodPost, "/", nil)
@@ -52,7 +52,7 @@ func TestSetupRouter(t *testing.T) {
 		}
 		b, _ := json.Marshal(request)
 
-		req, err := http.NewRequest(http.MethodPost, "/api/v1/brand/save", bytes.NewReader(b))
+		req, err := http.NewRequest(http.MethodPost, "/ping", bytes.NewReader(b))
 		assert.NoError(t, err)
 
 		rec := httptest.NewRecorder()

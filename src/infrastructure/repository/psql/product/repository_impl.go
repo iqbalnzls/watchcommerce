@@ -1,10 +1,10 @@
-package psql
+package product
 
 import (
 	"database/sql"
 	"errors"
 
-	domainProduct "github.com/iqbalnzls/watchcommerce/src/domain/product"
+	domainProduct "github.com/iqbalnzls/watchcommerce/src/domain"
 	"github.com/iqbalnzls/watchcommerce/src/pkg/constant"
 	"github.com/iqbalnzls/watchcommerce/src/pkg/utils"
 )
@@ -13,7 +13,7 @@ type productRepo struct {
 	db *sql.DB
 }
 
-func NewProductRepository(db *sql.DB) domainProduct.ProductRepositoryIFace {
+func NewProductRepository(db *sql.DB) ProductRepositoryIFace {
 	if db == nil {
 		panic("db connection repository is nil")
 	}

@@ -1,8 +1,8 @@
 package product
 
 import (
-	domainProduct "github.com/iqbalnzls/watchcommerce/src/domain/product"
 	"github.com/iqbalnzls/watchcommerce/src/dto"
+	domainProduct "github.com/iqbalnzls/watchcommerce/src/infrastructure/repository/psql/product"
 )
 
 type productService struct {

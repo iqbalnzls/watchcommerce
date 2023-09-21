@@ -1,4 +1,4 @@
-package psql_test
+package product_test
 
 import (
 	"database/sql"
@@ -10,8 +10,8 @@ import (
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/stretchr/testify/assert"
 
-	domainProduct "github.com/iqbalnzls/watchcommerce/src/domain/product"
-	"github.com/iqbalnzls/watchcommerce/src/infrastructure/repository/psql"
+	domainProduct "github.com/iqbalnzls/watchcommerce/src/domain"
+	"github.com/iqbalnzls/watchcommerce/src/infrastructure/repository/psql/product"
 	"github.com/iqbalnzls/watchcommerce/src/pkg/constant"
 )
 
@@ -39,11 +39,11 @@ func TestNewProductRepository(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if tt.wantPanic {
 				assert.Panics(t, func() {
-					_ = psql.NewProductRepository(tt.args.db)
+					_ = product.NewProductRepository(tt.args.db)
 				})
 			} else {
 				assert.NotPanics(t, func() {
-					_ = psql.NewProductRepository(tt.args.db)
+					_ = product.NewProductRepository(tt.args.db)
 				})
 			}
 		})
@@ -127,7 +127,7 @@ func Test_productRepo_GetByBrandID(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			r := psql.NewProductRepository(db)
+			r := product.NewProductRepository(db)
 
 			if tt.wantErr != nil && !tt.wantArgs {
 				mock.ExpectQuery(`^SELECT (.+) FROM (.+)product`).WillReturnError(tt.args.resp.err)
@@ -204,7 +204,7 @@ func Test_productRepo_GetByID(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			r := psql.NewProductRepository(db)
+			r := product.NewProductRepository(db)
 
 			if tt.wantErr != nil {
 				mock.ExpectQuery(`^SELECT (.+) FROM (.+)product`).WillReturnError(tt.args.resp.err)
@@ -263,7 +263,7 @@ func Test_productRepo_Save(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			r := psql.NewProductRepository(db)
+			r := product.NewProductRepository(db)
 
 			if tt.wantErr != nil {
 				mock.ExpectExec(`^INSERT INTO (.+)product`).WillReturnError(tt.args.resp.err)
@@ -319,7 +319,7 @@ func Test_productRepo_UpdateByQuantity(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			r := psql.NewProductRepository(db)
+			r := product.NewProductRepository(db)
 
 			mock.ExpectBegin()
 			if tt.wantErr != nil {

@@ -8,8 +8,9 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 
-	domainProduct "github.com/iqbalnzls/watchcommerce/src/domain/product"
+	domainProduct "github.com/iqbalnzls/watchcommerce/src/domain"
 	"github.com/iqbalnzls/watchcommerce/src/dto"
+	"github.com/iqbalnzls/watchcommerce/src/infrastructure/repository/psql/product"
 	"github.com/iqbalnzls/watchcommerce/src/pkg/constant"
 	mocksPsql "github.com/iqbalnzls/watchcommerce/src/pkg/mock/infrastructure/repository/psql"
 	usecaseProduct "github.com/iqbalnzls/watchcommerce/src/usecase/product"
@@ -17,7 +18,7 @@ import (
 
 func TestNewProductService(t *testing.T) {
 	type args struct {
-		productRepo domainProduct.ProductRepositoryIFace
+		productRepo product.ProductRepositoryIFace
 	}
 	tests := []struct {
 		name      string

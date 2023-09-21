@@ -27,7 +27,7 @@ func main() {
 
 	container := delivery.SetupContainer()
 
-	go inGraphQL.StartGraphQLService(mux, container)
+	go inGraphQL.StartGraphQLServer(mux, container)
 
-	inHttp.StartHttpService(mux, container)
+	inHttp.StartHttpServer(mux, container)
 }

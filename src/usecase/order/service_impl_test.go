@@ -9,10 +9,11 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 
-	domainOrder "github.com/iqbalnzls/watchcommerce/src/domain/order"
-	domainOrderDetails "github.com/iqbalnzls/watchcommerce/src/domain/order_details"
-	domainProduct "github.com/iqbalnzls/watchcommerce/src/domain/product"
+	domainOrder "github.com/iqbalnzls/watchcommerce/src/domain"
 	"github.com/iqbalnzls/watchcommerce/src/dto"
+	"github.com/iqbalnzls/watchcommerce/src/infrastructure/repository/psql/order"
+	"github.com/iqbalnzls/watchcommerce/src/infrastructure/repository/psql/order_details"
+	"github.com/iqbalnzls/watchcommerce/src/infrastructure/repository/psql/product"
 	"github.com/iqbalnzls/watchcommerce/src/pkg/constant"
 	mocksPsql "github.com/iqbalnzls/watchcommerce/src/pkg/mock/infrastructure/repository/psql"
 	usecaseOrder "github.com/iqbalnzls/watchcommerce/src/usecase/order"
@@ -20,9 +21,9 @@ import (
 
 func TestNewOrderService(t *testing.T) {
 	type args struct {
-		productRepo      domainProduct.ProductRepositoryIFace
-		orderRepo        domainOrder.OrderRepositoryIFace
-		orderDetailsRepo domainOrderDetails.OrderDetailsRepositoryIFace
+		productRepo      product.ProductRepositoryIFace
+		orderRepo        order.OrderRepositoryIFace
+		orderDetailsRepo order_details.OrderDetailsRepositoryIFace
 	}
 	tests := []struct {
 		name      string
@@ -79,7 +80,7 @@ func TestNewOrderService(t *testing.T) {
 
 func Test_orderService_Get(t *testing.T) {
 	type getByOrderID struct {
-		domains []*domainOrderDetails.OrderDetails
+		domains []*domainOrder.OrderDetails
 		err     error
 	}
 	type orderDetailsRepo struct {
@@ -158,7 +159,7 @@ func Test_orderService_Get(t *testing.T) {
 						},
 						orderDetailsRepo: orderDetailsRepo{
 							getByOrderID: getByOrderID{
-								domains: []*domainOrderDetails.OrderDetails{
+								domains: []*domainOrder.OrderDetails{
 									{
 										ID:        1,
 										OrderID:   12,
@@ -209,7 +210,7 @@ func Test_orderService_Get(t *testing.T) {
 
 func Test_orderService_Save(t *testing.T) {
 	type getByID struct {
-		domain *domainProduct.Product
+		domain *domainOrder.Product
 		err    error
 	}
 	type updateByQuantity struct {
@@ -296,7 +297,7 @@ func Test_orderService_Save(t *testing.T) {
 					resp: resp{
 						productRepo: productRepo{
 							getByID: getByID{
-								domain: &domainProduct.Product{
+								domain: &domainOrder.Product{
 									ID:       1,
 									Quantity: 1,
 								},
@@ -325,7 +326,7 @@ func Test_orderService_Save(t *testing.T) {
 						},
 						productRepo: productRepo{
 							getByID: getByID{
-								domain: &domainProduct.Product{
+								domain: &domainOrder.Product{
 									ID:       1,
 									Quantity: 10,
 								},
@@ -354,7 +355,7 @@ func Test_orderService_Save(t *testing.T) {
 						},
 						productRepo: productRepo{
 							getByID: getByID{
-								domain: &domainProduct.Product{
+								domain: &domainOrder.Product{
 									ID:       1,
 									Quantity: 10,
 								},
@@ -383,7 +384,7 @@ func Test_orderService_Save(t *testing.T) {
 						},
 						productRepo: productRepo{
 							getByID: getByID{
-								domain: &domainProduct.Product{
+								domain: &domainOrder.Product{
 									ID:       1,
 									Quantity: 10,
 								},
@@ -407,7 +408,7 @@ func Test_orderService_Save(t *testing.T) {
 					resp: resp{
 						productRepo: productRepo{
 							getByID: getByID{
-								domain: &domainProduct.Product{
+								domain: &domainOrder.Product{
 									ID:       1,
 									Quantity: 10,
 								},
@@ -439,7 +440,7 @@ func Test_orderService_Save(t *testing.T) {
 					resp: resp{
 						productRepo: productRepo{
 							getByID: getByID{
-								domain: &domainProduct.Product{
+								domain: &domainOrder.Product{
 									ID:       1,
 									Quantity: 10,
 								},
@@ -473,7 +474,7 @@ func Test_orderService_Save(t *testing.T) {
 					resp: resp{
 						productRepo: productRepo{
 							getByID: getByID{
-								domain: &domainProduct.Product{
+								domain: &domainOrder.Product{
 									ID:       1,
 									Quantity: 10,
 								},
@@ -505,7 +506,7 @@ func Test_orderService_Save(t *testing.T) {
 					resp: resp{
 						productRepo: productRepo{
 							getByID: getByID{
-								domain: &domainProduct.Product{
+								domain: &domainOrder.Product{
 									ID:       1,
 									Quantity: 10,
 								},

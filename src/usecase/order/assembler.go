@@ -1,12 +1,11 @@
 package order
 
 import (
-	domainOrder "github.com/iqbalnzls/watchcommerce/src/domain/order"
-	domainOrderDetails "github.com/iqbalnzls/watchcommerce/src/domain/order_details"
+	domainOrder "github.com/iqbalnzls/watchcommerce/src/domain"
 	"github.com/iqbalnzls/watchcommerce/src/dto"
 )
 
-func toGetOrderResponse(order *domainOrder.Order, orderDetails []*domainOrderDetails.OrderDetails) dto.GetOrderResponse {
+func toGetOrderResponse(order *domainOrder.Order, orderDetails []*domainOrder.OrderDetails) dto.GetOrderResponse {
 	return dto.GetOrderResponse{
 		ID:      order.ID,
 		Total:   order.Total,
@@ -14,7 +13,7 @@ func toGetOrderResponse(order *domainOrder.Order, orderDetails []*domainOrderDet
 	}
 }
 
-func toOrderDetailsResponses(d []*domainOrderDetails.OrderDetails) []dto.OrderDetailsResponse {
+func toOrderDetailsResponses(d []*domainOrder.OrderDetails) []dto.OrderDetailsResponse {
 	var orderDetailResponses = make([]dto.OrderDetailsResponse, 0)
 	for _, v := range d {
 		orderDetailResponses = append(orderDetailResponses, toOrderDetailsResponse(v))
@@ -23,7 +22,7 @@ func toOrderDetailsResponses(d []*domainOrderDetails.OrderDetails) []dto.OrderDe
 	return orderDetailResponses
 }
 
-func toOrderDetailsResponse(d *domainOrderDetails.OrderDetails) dto.OrderDetailsResponse {
+func toOrderDetailsResponse(d *domainOrder.OrderDetails) dto.OrderDetailsResponse {
 	return dto.OrderDetailsResponse{
 		ID:        d.ID,
 		OrderID:   d.OrderID,

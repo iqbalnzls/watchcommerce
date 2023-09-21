@@ -1,4 +1,4 @@
-package brand
+package domain
 
 import (
 	"time"

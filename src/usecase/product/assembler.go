@@ -1,7 +1,7 @@
 package product
 
 import (
-	domainProduct "github.com/iqbalnzls/watchcommerce/src/domain/product"
+	domainProduct "github.com/iqbalnzls/watchcommerce/src/domain"
 	"github.com/iqbalnzls/watchcommerce/src/dto"
 )
 

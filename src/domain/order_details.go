@@ -1,4 +1,4 @@
-package order_details
+package domain
 
 import "time"
 

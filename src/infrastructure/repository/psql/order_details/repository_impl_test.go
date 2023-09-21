@@ -1,4 +1,4 @@
-package psql_test
+package order_details_test
 
 import (
 	"database/sql"
@@ -10,8 +10,8 @@ import (
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/stretchr/testify/assert"
 
-	domainOrderDetails "github.com/iqbalnzls/watchcommerce/src/domain/order_details"
-	"github.com/iqbalnzls/watchcommerce/src/infrastructure/repository/psql"
+	domainOrderDetails "github.com/iqbalnzls/watchcommerce/src/domain"
+	"github.com/iqbalnzls/watchcommerce/src/infrastructure/repository/psql/order_details"
 	"github.com/iqbalnzls/watchcommerce/src/pkg/constant"
 )
 
@@ -39,11 +39,11 @@ func TestNewOrderDetailsRepository(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if tt.wantPanic {
 				assert.Panics(t, func() {
-					_ = psql.NewOrderDetailsRepository(tt.args.db)
+					_ = order_details.NewOrderDetailsRepository(tt.args.db)
 				})
 			} else {
 				assert.NotPanics(t, func() {
-					_ = psql.NewOrderDetailsRepository(tt.args.db)
+					_ = order_details.NewOrderDetailsRepository(tt.args.db)
 				})
 			}
 		})
@@ -127,7 +127,7 @@ func Test_orderDetailsRepo_GetByOrderID(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			r := psql.NewOrderDetailsRepository(db)
+			r := order_details.NewOrderDetailsRepository(db)
 
 			if tt.wantErr != nil && !tt.wantArgs {
 				mock.ExpectQuery(`^SELECT (.+)FROM (.+)order_details`).WillReturnError(tt.args.resp.err)
@@ -189,7 +189,7 @@ func Test_orderDetailsRepo_SaveBulkWithDBTrx(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			r := psql.NewOrderDetailsRepository(db)
+			r := order_details.NewOrderDetailsRepository(db)
 			mock.ExpectBegin()
 			if tt.wantErr != nil {
 				mock.ExpectExec(`^INSERT INTO (.+)order_details`).WillReturnError(errors.New("general error"))

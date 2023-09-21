@@ -1,4 +1,4 @@
-package psql
+package order_details
 
 import (
 	"database/sql"
@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"strings"
 
-	domainOrderDetails "github.com/iqbalnzls/watchcommerce/src/domain/order_details"
+	domainOrderDetails "github.com/iqbalnzls/watchcommerce/src/domain"
 	"github.com/iqbalnzls/watchcommerce/src/pkg/constant"
 	"github.com/iqbalnzls/watchcommerce/src/pkg/utils"
 )
@@ -15,7 +15,7 @@ type orderDetailsRepo struct {
 	db *sql.DB
 }
 
-func NewOrderDetailsRepository(db *sql.DB) domainOrderDetails.OrderDetailsRepositoryIFace {
+func NewOrderDetailsRepository(db *sql.DB) OrderDetailsRepositoryIFace {
 	if db == nil {
 		panic("db connection is nil")
 	}

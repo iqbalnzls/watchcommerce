@@ -1,4 +1,4 @@
-package psql_test
+package brand_test
 
 import (
 	"database/sql"
@@ -10,8 +10,8 @@ import (
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/stretchr/testify/assert"
 
-	domainBrand "github.com/iqbalnzls/watchcommerce/src/domain/brand"
-	"github.com/iqbalnzls/watchcommerce/src/infrastructure/repository/psql"
+	domainBrand "github.com/iqbalnzls/watchcommerce/src/domain"
+	"github.com/iqbalnzls/watchcommerce/src/infrastructure/repository/psql/brand"
 	"github.com/iqbalnzls/watchcommerce/src/pkg/constant"
 )
 
@@ -39,11 +39,11 @@ func TestNewRepositoryBrand(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if tt.wantPanic {
 				assert.Panics(t, func() {
-					_ = psql.NewRepositoryBrand(tt.args.db)
+					_ = brand.NewRepositoryBrand(tt.args.db)
 				})
 			} else {
 				assert.NotPanics(t, func() {
-					_ = psql.NewRepositoryBrand(tt.args.db)
+					_ = brand.NewRepositoryBrand(tt.args.db)
 				})
 			}
 		})
@@ -96,7 +96,7 @@ func Test_brandRepo_Save(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			r := psql.NewRepositoryBrand(db)
+			r := brand.NewRepositoryBrand(db)
 			if tt.wantErr != nil {
 				mock.ExpectExec(`^INSERT INTO (.+)brand`).WillReturnError(tt.args.resp.err)
 			} else {

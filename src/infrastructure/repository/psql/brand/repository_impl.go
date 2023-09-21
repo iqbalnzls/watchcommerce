@@ -1,10 +1,10 @@
-package psql
+package brand
 
 import (
 	"database/sql"
 	"errors"
 
-	domainBrand "github.com/iqbalnzls/watchcommerce/src/domain/brand"
+	domainBrand "github.com/iqbalnzls/watchcommerce/src/domain"
 	"github.com/iqbalnzls/watchcommerce/src/pkg/constant"
 	"github.com/iqbalnzls/watchcommerce/src/pkg/utils"
 )
@@ -13,7 +13,7 @@ type brandRepo struct {
 	db *sql.DB
 }
 
-func NewRepositoryBrand(db *sql.DB) domainBrand.BrandRepositoryIFace {
+func NewRepositoryBrand(db *sql.DB) BrandRepositoryIFace {
 	if db == nil {
 		panic("db connection is nil")
 	}

@@ -7,8 +7,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 
-	"github.com/iqbalnzls/watchcommerce/src/domain/brand"
 	"github.com/iqbalnzls/watchcommerce/src/dto"
+	"github.com/iqbalnzls/watchcommerce/src/infrastructure/repository/psql/brand"
 	"github.com/iqbalnzls/watchcommerce/src/pkg/constant"
 	mocksPsql "github.com/iqbalnzls/watchcommerce/src/pkg/mock/infrastructure/repository/psql"
 	usecaseBrand "github.com/iqbalnzls/watchcommerce/src/usecase/brand"

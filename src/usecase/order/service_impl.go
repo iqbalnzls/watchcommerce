@@ -5,21 +5,22 @@ import (
 
 	"golang.org/x/sync/errgroup"
 
-	domainOrder "github.com/iqbalnzls/watchcommerce/src/domain/order"
-	domainOrderDetails "github.com/iqbalnzls/watchcommerce/src/domain/order_details"
-	domainProduct "github.com/iqbalnzls/watchcommerce/src/domain/product"
+	domainOrder "github.com/iqbalnzls/watchcommerce/src/domain"
 	"github.com/iqbalnzls/watchcommerce/src/dto"
+	"github.com/iqbalnzls/watchcommerce/src/infrastructure/repository/psql/order"
+	"github.com/iqbalnzls/watchcommerce/src/infrastructure/repository/psql/order_details"
+	"github.com/iqbalnzls/watchcommerce/src/infrastructure/repository/psql/product"
 	"github.com/iqbalnzls/watchcommerce/src/pkg/constant"
 	"github.com/iqbalnzls/watchcommerce/src/pkg/utils"
 )
 
 type orderService struct {
-	productRepo      domainProduct.ProductRepositoryIFace
-	orderRepo        domainOrder.OrderRepositoryIFace
-	orderDetailsRepo domainOrderDetails.OrderDetailsRepositoryIFace
+	productRepo      product.ProductRepositoryIFace
+	orderRepo        order.OrderRepositoryIFace
+	orderDetailsRepo order_details.OrderDetailsRepositoryIFace
 }
 
-func NewOrderService(productRepo domainProduct.ProductRepositoryIFace, orderRepo domainOrder.OrderRepositoryIFace, orderDetailsRepo domainOrderDetails.OrderDetailsRepositoryIFace) OrderServiceIFace {
+func NewOrderService(productRepo product.ProductRepositoryIFace, orderRepo order.OrderRepositoryIFace, orderDetailsRepo order_details.OrderDetailsRepositoryIFace) OrderServiceIFace {
 	if productRepo == nil {
 		panic("product repository is nil")
 	}
@@ -39,8 +40,8 @@ func NewOrderService(productRepo domainProduct.ProductRepositoryIFace, orderRepo
 
 func (s *orderService) Save(req *dto.CreateOrderRequest) (err error) {
 	var (
-		orderDetails = make([]domainOrderDetails.OrderDetails, 0)
-		products     = make([]*domainProduct.Product, 0)
+		orderDetails = make([]domainOrder.OrderDetails, 0)
+		products     = make([]*domainOrder.Product, 0)
 		total        int64
 	)
 
@@ -54,7 +55,7 @@ func (s *orderService) Save(req *dto.CreateOrderRequest) (err error) {
 			utils.Error(err)
 			return
 		}
-		orderDetail := domainOrderDetails.OrderDetails{
+		orderDetail := domainOrder.OrderDetails{
 			Quantity:  order.Quantity,
 			Price:     product.Price * order.Quantity,
 			ProductID: product.ID,
@@ -99,7 +100,7 @@ func (s *orderService) Get(req *dto.GetOrderRequest) (resp dto.GetOrderResponse,
 	var (
 		eg           = new(errgroup.Group)
 		order        *domainOrder.Order
-		orderDetails []*domainOrderDetails.OrderDetails
+		orderDetails []*domainOrder.OrderDetails
 	)
 
 	eg.Go(func() (er error) {

@@ -17,7 +17,7 @@ type brandHandler struct {
 	*validator.DataValidator
 }
 
-func NewBrandHandler(brandService serviceBrand.BrandServiceIFace, v *validator.DataValidator) *brandHandler {
+func NewBrandHandler(brandService serviceBrand.BrandServiceIFace, v *validator.DataValidator) BrandHandlerIFace {
 	if brandService == nil {
 		panic("brand service is nil")
 	}

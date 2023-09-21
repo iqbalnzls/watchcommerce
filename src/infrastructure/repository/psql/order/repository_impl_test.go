@@ -1,4 +1,4 @@
-package psql_test
+package order_test
 
 import (
 	"database/sql"
@@ -9,8 +9,9 @@ import (
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/stretchr/testify/assert"
 
-	domainOrder "github.com/iqbalnzls/watchcommerce/src/domain/order"
-	"github.com/iqbalnzls/watchcommerce/src/infrastructure/repository/psql"
+	domainOrder "github.com/iqbalnzls/watchcommerce/src/domain"
+	"github.com/iqbalnzls/watchcommerce/src/infrastructure/repository/psql/order"
+	"github.com/iqbalnzls/watchcommerce/src/infrastructure/repository/psql/order_details"
 	"github.com/iqbalnzls/watchcommerce/src/pkg/constant"
 )
 
@@ -38,11 +39,11 @@ func TestNewOrderRepository(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if tt.wantPanic {
 				assert.Panics(t, func() {
-					_ = psql.NewOrderRepository(tt.args.db)
+					_ = order.NewOrderRepository(tt.args.db)
 				})
 			} else {
 				assert.NotPanics(t, func() {
-					_ = psql.NewOrderDetailsRepository(tt.args.db)
+					_ = order_details.NewOrderDetailsRepository(tt.args.db)
 				})
 			}
 		})
@@ -106,7 +107,7 @@ func Test_orderRepo_Get(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			r := psql.NewOrderRepository(db)
+			r := order.NewOrderRepository(db)
 			if tt.wantErr != nil {
 				mock.ExpectQuery(`^SELECT (.+)FROM (.+)order`).WillReturnError(tt.args.resp.err)
 			} else {
@@ -168,7 +169,7 @@ func Test_orderRepo_SaveWithDBTrx(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			r := psql.NewOrderRepository(db)
+			r := order.NewOrderRepository(db)
 
 			mock.ExpectBegin()
 			if tt.wantErr != nil {
@@ -205,7 +206,7 @@ func Test_orderRepo_BeginDBTrx(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			mock.ExpectBegin()
 
-			r := psql.NewOrderRepository(db)
+			r := order.NewOrderRepository(db)
 			_, err := r.BeginDBTrx()
 			assert.NoError(t, err)
 		})
@@ -234,7 +235,7 @@ func Test_orderRepo_CommitDBTrx(t *testing.T) {
 			tx, err := db.Begin()
 			assert.NoError(t, err)
 
-			r := psql.NewOrderRepository(db)
+			r := order.NewOrderRepository(db)
 			wantEr := r.CommitDBTrx(tx)
 			assert.NoError(t, wantEr)
 		})
@@ -263,7 +264,7 @@ func Test_orderRepo_RollbackDBTrx(t *testing.T) {
 			tx, err := db.Begin()
 			assert.NoError(t, err)
 
-			r := psql.NewOrderRepository(db)
+			r := order.NewOrderRepository(db)
 			err = r.RollbackDBTrx(tx)
 			assert.NoError(t, err)
 		})

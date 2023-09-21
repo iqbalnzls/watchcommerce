@@ -1,10 +1,10 @@
-package psql
+package order
 
 import (
 	"database/sql"
 	"errors"
 
-	domainOrder "github.com/iqbalnzls/watchcommerce/src/domain/order"
+	domainOrder "github.com/iqbalnzls/watchcommerce/src/domain"
 	"github.com/iqbalnzls/watchcommerce/src/pkg/constant"
 	"github.com/iqbalnzls/watchcommerce/src/pkg/utils"
 )
@@ -13,7 +13,7 @@ type orderRepo struct {
 	db *sql.DB
 }
 
-func NewOrderRepository(db *sql.DB) domainOrder.OrderRepositoryIFace {
+func NewOrderRepository(db *sql.DB) OrderRepositoryIFace {
 	if db == nil {
 		panic("db connection is nil")
 	}

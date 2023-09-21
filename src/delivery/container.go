@@ -1,7 +1,10 @@
 package delivery
 
 import (
-	infraPsql "github.com/iqbalnzls/watchcommerce/src/infrastructure/repository/psql"
+	"github.com/iqbalnzls/watchcommerce/src/infrastructure/repository/psql/brand"
+	"github.com/iqbalnzls/watchcommerce/src/infrastructure/repository/psql/order"
+	"github.com/iqbalnzls/watchcommerce/src/infrastructure/repository/psql/order_details"
+	infraPsql "github.com/iqbalnzls/watchcommerce/src/infrastructure/repository/psql/product"
 	"github.com/iqbalnzls/watchcommerce/src/pkg/config"
 	"github.com/iqbalnzls/watchcommerce/src/pkg/database"
 	"github.com/iqbalnzls/watchcommerce/src/pkg/validator"
@@ -11,11 +14,11 @@ import (
 )
 
 type Container struct {
-	BrandService   usecaseBrand.BrandServiceIFace
 	ProductService usecaseProduct.ProductServiceIFace
 	OrderService   usecaseOrder.OrderServiceIFace
-	Config         *config.Config
+	BrandService   usecaseBrand.BrandServiceIFace
 	Validator      *validator.DataValidator
+	Config         *config.Config
 }
 
 func SetupContainer() *Container {
@@ -29,10 +32,10 @@ func SetupContainer() *Container {
 	db := database.NewDatabase(&cfg.Database)
 
 	//init repository
-	brandRepo := infraPsql.NewRepositoryBrand(db)
+	brandRepo := brand.NewRepositoryBrand(db)
 	productRepo := infraPsql.NewProductRepository(db)
-	orderRepo := infraPsql.NewOrderRepository(db)
-	orderDetailsRepo := infraPsql.NewOrderDetailsRepository(db)
+	orderRepo := order.NewOrderRepository(db)
+	orderDetailsRepo := order_details.NewOrderDetailsRepository(db)
 
 	//init service
 	brandService := usecaseBrand.NewBrandService(brandRepo)
@@ -40,9 +43,9 @@ func SetupContainer() *Container {
 	orderService := usecaseOrder.NewOrderService(productRepo, orderRepo, orderDetailsRepo)
 
 	return &Container{
-		BrandService:   brandService,
 		ProductService: productService,
 		OrderService:   orderService,
+		BrandService:   brandService,
 		Config:         cfg,
 		Validator:      v,
 	}
