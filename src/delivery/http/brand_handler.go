@@ -7,6 +7,7 @@ import (
 
 	"github.com/iqbalnzls/watchcommerce/src/dto"
 	"github.com/iqbalnzls/watchcommerce/src/pkg/constant"
+	"github.com/iqbalnzls/watchcommerce/src/pkg/logger"
 	"github.com/iqbalnzls/watchcommerce/src/pkg/utils"
 	"github.com/iqbalnzls/watchcommerce/src/pkg/validator"
 	serviceBrand "github.com/iqbalnzls/watchcommerce/src/usecase/brand"
@@ -45,6 +46,7 @@ func (h *brandHandler) Save(w http.ResponseWriter, r *http.Request) {
 		req      *dto.CreateBrandRequest
 		baseResp dto.BaseResponse
 		err      error
+		log      = logger.ToLogger(r)
 	)
 
 	defer func() {
@@ -53,25 +55,37 @@ func (h *brandHandler) Save(w http.ResponseWriter, r *http.Request) {
 		}
 		b, _ := json.Marshal(baseResp)
 		_, _ = w.Write(b)
+		log.FinishedRequest(baseResp)
 	}()
 
 	if r.Method != http.MethodPost {
 		err = errors.New(constant.ErrorInvalidHttpMethod)
+		log.Err = err.Error()
+		log.Error(err.Error())
 		utils.Error(err)
 		return
 	}
 
+	startTime := log.SubProcessStart("decode request start")
 	if err = json.NewDecoder(r.Body).Decode(&req); err != nil {
 		utils.Error(err)
+		log.Err = err.Error()
+		log.Error(err.Error())
 		err = errors.New(constant.ErrorBadRequest)
 		return
 	}
+
+	log.Req = req
 
 	if err = h.Validate(req); err != nil {
 		utils.Error(err)
+		log.Err = err.Error()
+		log.Error(err.Error())
 		err = errors.New(constant.ErrorBadRequest)
 		return
 	}
+
+	log.SubProcessEnd(startTime, "decode request finish")
 
 	if err = h.brandService.Save(req); err != nil {
 		return

@@ -1,12 +1,16 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
+
+	"github.com/mbndr/figlet4go"
 
 	_ "github.com/iqbalnzls/watchcommerce/docs"
 	"github.com/iqbalnzls/watchcommerce/src/delivery"
 	inGraphQL "github.com/iqbalnzls/watchcommerce/src/delivery/graph"
 	inHttp "github.com/iqbalnzls/watchcommerce/src/delivery/http"
+	"github.com/iqbalnzls/watchcommerce/src/pkg/constant"
 )
 
 // @title Watchcommerce API Documentation
@@ -27,7 +31,27 @@ func main() {
 
 	container := delivery.SetupContainer()
 
-	go inGraphQL.StartGraphQLServer(mux, container)
+	fmt.Print(showBanner())
+	fmt.Printf(constant.AppVersion + "\n\n")
+	fmt.Println("+--------------------------------------------------------------+\n")
 
+	go inGraphQL.StartGraphQLServer(mux, container)
 	inHttp.StartHttpServer(mux, container)
+}
+
+func showBanner() string {
+	ascii := figlet4go.NewAsciiRender()
+
+	options := figlet4go.NewRenderOptions()
+	options.FontName = "larry3d"
+	options.FontColor = []figlet4go.Color{
+		figlet4go.ColorRed,
+		figlet4go.ColorBlue,
+		figlet4go.ColorCyan,
+		figlet4go.ColorMagenta,
+	}
+
+	renderStr, _ := ascii.RenderOpts("watchcommerce", options)
+
+	return renderStr
 }

@@ -1,8 +1,11 @@
 package http
 
 import (
+	"context"
 	"net/http"
 
+	"github.com/iqbalnzls/watchcommerce/src/pkg/constant"
+	"github.com/iqbalnzls/watchcommerce/src/pkg/logger"
 	"github.com/iqbalnzls/watchcommerce/src/pkg/utils"
 )
 
@@ -21,7 +24,19 @@ func SetupMiddleware() Middleware {
 			w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 			w.Header().Set("Content-Type", "application/json")
 
-			next.ServeHTTP(w, r)
+			logger := logger.NewLogger(&logger.Log{
+				Path:        r.URL.Path,
+				ServiceName: constant.AppName,
+				Version:     constant.AppVersion,
+				Header:      r.Header,
+				IP:          r.RemoteAddr,
+			})
+
+			logger.IncomingRequest()
+
+			cont := context.WithValue(r.Context(), constant.AppContext, logger)
+
+			next.ServeHTTP(w, r.WithContext(cont))
 		}
 	}
 }
