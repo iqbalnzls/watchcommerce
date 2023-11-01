@@ -1,15 +1,11 @@
 package logger
 
 import (
-	"net/http"
 	"strconv"
 	"time"
 
-	"github.com/google/uuid"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
-
-	"github.com/iqbalnzls/watchcommerce/src/pkg/constant"
 )
 
 type Log struct {
@@ -23,39 +19,26 @@ type Log struct {
 	Resp        interface{}
 	Time        string
 	Err         string
-	zapLog      *zap.Logger
+	ZapLog      *zap.Logger
 }
 
-type AppContext interface {
+type Logger interface {
 	IncomingRequest(message ...string)
 	SubProcessStart(message ...string) time.Time
 	SubProcessEnd(start time.Time, message ...string)
 	FinishedRequest(resp interface{}, message ...string)
 	Info(message ...string)
 	Error(message ...string)
-}
-
-func NewLogger(log *Log) AppContext {
-	logger, _ := zap.NewProduction()
-	defer logger.Sync()
-
-	return &Log{
-		XID:         uuid.New().String(),
-		Path:        log.Path,
-		Header:      log.Header,
-		Time:        time.Now().String(),
-		ServiceName: log.ServiceName,
-		Version:     log.Version,
-		zapLog:      logger,
-	}
+	SetError(err error)
+	SetRequest(req interface{})
 }
 
 func (l *Log) IncomingRequest(message ...string) {
-	l.zapLog.Info("Incoming Request", composeField(l, message)...)
+	l.ZapLog.Info("Incoming Request", composeField(l, message)...)
 }
 
 func (l *Log) SubProcessStart(message ...string) time.Time {
-	l.zapLog.Info("Sub Process Start", composeField(l, message)...)
+	l.ZapLog.Info("Sub Process Start", composeField(l, message)...)
 	return time.Now()
 }
 
@@ -64,7 +47,7 @@ func (l *Log) SubProcessEnd(startTime time.Time, message ...string) {
 		{Key: "processing-time", String: strconv.Itoa(int(time.Now().Sub(startTime).Milliseconds())) + "ms", Type: zapcore.StringType},
 	}
 
-	l.zapLog.Info("Sub Process End", append(fields, composeField(l, message)...)...)
+	l.ZapLog.Info("Sub Process End", append(fields, composeField(l, message)...)...)
 }
 
 func (l *Log) FinishedRequest(resp interface{}, message ...string) {
@@ -75,15 +58,23 @@ func (l *Log) FinishedRequest(resp interface{}, message ...string) {
 		{Key: "header", Interface: l.Header, Type: zapcore.ReflectType},
 	}
 
-	l.zapLog.Info("Finished Request", append(fields, composeField(l, message)...)...)
+	l.ZapLog.Info("Finished Request", append(fields, composeField(l, message)...)...)
 }
 
 func (l *Log) Info(messages ...string) {
-	l.zapLog.Info("Info", composeField(l, messages)...)
+	l.ZapLog.Info("Info", composeField(l, messages)...)
 }
 
 func (l *Log) Error(message ...string) {
-	l.zapLog.Error("Error", composeField(l, message)...)
+	l.ZapLog.Error("Error", composeField(l, message)...)
+}
+
+func (l *Log) SetError(err error) {
+	l.Err = err.Error()
+}
+
+func (l *Log) SetRequest(req interface{}) {
+	l.Req = req
 }
 
 func composeField(l *Log, msg []string) []zap.Field {
@@ -103,14 +94,4 @@ func composeField(l *Log, msg []string) []zap.Field {
 		{Key: "version", String: l.Version, Type: zapcore.StringType},
 		{Key: "time", String: l.Time, Type: zapcore.StringType},
 	}...)
-}
-
-func ToLogger(r *http.Request) *Log {
-	ctx := r.Context()
-	log, ok := ctx.Value(constant.AppContext).(*Log)
-	if ok {
-		return log
-	}
-
-	return nil
 }

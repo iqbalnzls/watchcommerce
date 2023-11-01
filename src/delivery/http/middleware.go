@@ -4,6 +4,7 @@ import (
 	"context"
 	"net/http"
 
+	"github.com/iqbalnzls/watchcommerce/src/pkg/app_ctx"
 	"github.com/iqbalnzls/watchcommerce/src/pkg/constant"
 	"github.com/iqbalnzls/watchcommerce/src/pkg/logger"
 	"github.com/iqbalnzls/watchcommerce/src/pkg/utils"
@@ -24,7 +25,7 @@ func SetupMiddleware() Middleware {
 			w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 			w.Header().Set("Content-Type", "application/json")
 
-			logger := logger.NewLogger(&logger.Log{
+			appCtx := app_ctx.NewAppContext(&logger.Log{
 				Path:        r.URL.Path,
 				ServiceName: constant.AppName,
 				Version:     constant.AppVersion,
@@ -32,9 +33,9 @@ func SetupMiddleware() Middleware {
 				IP:          r.RemoteAddr,
 			})
 
-			logger.IncomingRequest()
+			appCtx.Logger.IncomingRequest()
 
-			cont := context.WithValue(r.Context(), constant.AppContext, logger)
+			cont := context.WithValue(r.Context(), constant.AppContext, appCtx)
 
 			next.ServeHTTP(w, r.WithContext(cont))
 		}
