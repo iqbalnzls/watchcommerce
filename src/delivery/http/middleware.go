@@ -3,8 +3,11 @@ package http
 import (
 	"context"
 	"net/http"
+	"time"
 
-	"github.com/iqbalnzls/watchcommerce/src/pkg/app_ctx"
+	"github.com/google/uuid"
+
+	"github.com/iqbalnzls/watchcommerce/src/pkg/app_context"
 	"github.com/iqbalnzls/watchcommerce/src/pkg/constant"
 	"github.com/iqbalnzls/watchcommerce/src/pkg/logger"
 	"github.com/iqbalnzls/watchcommerce/src/pkg/utils"
@@ -25,7 +28,9 @@ func SetupMiddleware() Middleware {
 			w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 			w.Header().Set("Content-Type", "application/json")
 
-			appCtx := app_ctx.NewAppContext(&logger.Log{
+			appCtx := app_context.NewAppContext(&logger.Log{
+				XID:         uuid.New().String(),
+				Time:        time.Now().String(),
 				Path:        r.URL.Path,
 				ServiceName: constant.AppName,
 				Version:     constant.AppVersion,

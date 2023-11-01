@@ -2,18 +2,23 @@ package http_test
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"errors"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 
 	inHttp "github.com/iqbalnzls/watchcommerce/src/delivery/http"
 	"github.com/iqbalnzls/watchcommerce/src/dto"
+	"github.com/iqbalnzls/watchcommerce/src/pkg/app_context"
 	"github.com/iqbalnzls/watchcommerce/src/pkg/constant"
+	"github.com/iqbalnzls/watchcommerce/src/pkg/logger"
 	mocksUsecaseBrand "github.com/iqbalnzls/watchcommerce/src/pkg/mock/usecase/brand"
 	"github.com/iqbalnzls/watchcommerce/src/pkg/validator"
 	usecaseBrand "github.com/iqbalnzls/watchcommerce/src/usecase/brand"
@@ -159,10 +164,22 @@ func Test_brandHandler_Save(t *testing.T) {
 			req := httptest.NewRequest(tt.args.req.method, "/api/v1/brand/save", bytes.NewReader(b))
 			req.Header.Set("Content-Type", "application/json")
 
+			appCtx := app_context.NewAppContext(&logger.Log{
+				XID:         uuid.New().String(),
+				Time:        time.Now().String(),
+				Path:        req.URL.Path,
+				ServiceName: constant.AppName,
+				Version:     constant.AppVersion,
+				Header:      req.Header,
+				IP:          req.RemoteAddr,
+			})
+
+			ctx := context.WithValue(req.Context(), constant.AppContext, appCtx)
+
 			rec := httptest.NewRecorder()
 
 			h := inHttp.NewBrandHandler(brandService, v)
-			h.Save(rec, req)
+			h.Save(rec, req.WithContext(ctx))
 		})
 	}
 }

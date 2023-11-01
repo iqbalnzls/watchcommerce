@@ -1,10 +1,8 @@
-package app_ctx
+package app_context
 
 import (
 	"net/http"
-	"time"
 
-	"github.com/google/uuid"
 	"go.uber.org/zap"
 
 	"github.com/iqbalnzls/watchcommerce/src/pkg/constant"
@@ -21,10 +19,10 @@ func NewAppContext(log *logger.Log) *AppContext {
 
 	return &AppContext{
 		Logger: &logger.Log{
-			XID:         uuid.New().String(),
+			XID:         log.XID,
 			Path:        log.Path,
 			Header:      log.Header,
-			Time:        time.Now().String(),
+			Time:        log.Time,
 			ServiceName: log.ServiceName,
 			Version:     log.Version,
 			ZapLog:      zapLogger,

@@ -29,7 +29,7 @@ type Logger interface {
 	FinishedRequest(resp interface{}, message ...string)
 	Info(message ...string)
 	Error(message ...string)
-	SetError(err error)
+	SetError(str string)
 	SetRequest(req interface{})
 }
 
@@ -44,7 +44,7 @@ func (l *Log) SubProcessStart(message ...string) time.Time {
 
 func (l *Log) SubProcessEnd(startTime time.Time, message ...string) {
 	fields := []zap.Field{
-		{Key: "processing-time", String: strconv.Itoa(int(time.Now().Sub(startTime).Milliseconds())) + "ms", Type: zapcore.StringType},
+		{Key: "processing_time", String: strconv.Itoa(int(time.Now().Sub(startTime).Milliseconds())) + "ms", Type: zapcore.StringType},
 	}
 
 	l.ZapLog.Info("Sub Process End", append(fields, composeField(l, message)...)...)
@@ -69,8 +69,8 @@ func (l *Log) Error(message ...string) {
 	l.ZapLog.Error("Error", composeField(l, message)...)
 }
 
-func (l *Log) SetError(err error) {
-	l.Err = err.Error()
+func (l *Log) SetError(str string) {
+	l.Err = str
 }
 
 func (l *Log) SetRequest(req interface{}) {
@@ -90,7 +90,7 @@ func composeField(l *Log, msg []string) []zap.Field {
 		{Key: "xid", String: l.XID, Type: zapcore.StringType},
 		{Key: "ip", String: l.IP, Type: zapcore.StringType},
 		{Key: "path", String: l.Path, Type: zapcore.StringType},
-		{Key: "service-name", String: l.ServiceName, Type: zapcore.StringType},
+		{Key: "service_name", String: l.ServiceName, Type: zapcore.StringType},
 		{Key: "version", String: l.Version, Type: zapcore.StringType},
 		{Key: "time", String: l.Time, Type: zapcore.StringType},
 	}...)

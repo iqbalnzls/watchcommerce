@@ -33,7 +33,7 @@ func main() {
 
 	fmt.Print(showBanner())
 	fmt.Printf(constant.AppVersion + "\n\n")
-	fmt.Println("+--------------------------------------------------------------+\n")
+	fmt.Print("+--------------------------------------------------------------+\n")
 
 	go inGraphQL.StartGraphQLServer(mux, container)
 	inHttp.StartHttpServer(mux, container)

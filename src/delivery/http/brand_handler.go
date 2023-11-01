@@ -6,7 +6,7 @@ import (
 	"net/http"
 
 	"github.com/iqbalnzls/watchcommerce/src/dto"
-	"github.com/iqbalnzls/watchcommerce/src/pkg/app_ctx"
+	"github.com/iqbalnzls/watchcommerce/src/pkg/app_context"
 	"github.com/iqbalnzls/watchcommerce/src/pkg/constant"
 	"github.com/iqbalnzls/watchcommerce/src/pkg/validator"
 	serviceBrand "github.com/iqbalnzls/watchcommerce/src/usecase/brand"
@@ -45,7 +45,7 @@ func (h *brandHandler) Save(w http.ResponseWriter, r *http.Request) {
 		req      *dto.CreateBrandRequest
 		baseResp dto.BaseResponse
 		err      error
-		appCtx   = app_ctx.ParsingAppContext(r)
+		appCtx   = app_context.ParsingAppContext(r)
 	)
 
 	defer func() {
@@ -59,14 +59,14 @@ func (h *brandHandler) Save(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method != http.MethodPost {
 		err = errors.New(constant.ErrorInvalidHttpMethod)
-		appCtx.Logger.SetError(err)
+		appCtx.Logger.SetError(err.Error())
 		appCtx.Logger.Error(err.Error())
 		return
 	}
 
 	startTime := appCtx.Logger.SubProcessStart("decode request start")
 	if err = json.NewDecoder(r.Body).Decode(&req); err != nil {
-		appCtx.Logger.SetError(err)
+		appCtx.Logger.SetError(err.Error())
 		appCtx.Logger.Error(err.Error())
 		err = errors.New(constant.ErrorBadRequest)
 		return
@@ -75,7 +75,7 @@ func (h *brandHandler) Save(w http.ResponseWriter, r *http.Request) {
 	appCtx.Logger.SetRequest(req)
 
 	if err = h.Validate(req); err != nil {
-		appCtx.Logger.SetError(err)
+		appCtx.Logger.SetError(err.Error())
 		appCtx.Logger.Error(err.Error())
 		err = errors.New(constant.ErrorBadRequest)
 		return
