@@ -24,7 +24,7 @@ WatchCommerce is a lightweight, containerized e-commerce API built with **Golang
 ### 📦 Product APIs
 - **Create Product**
 
-    API to create a watch product with spesific brand
+    API to create a watch product with specific brand
 
     ```sh
     curl --location --request POST 'localhost:8000/api/v1/product/save' \

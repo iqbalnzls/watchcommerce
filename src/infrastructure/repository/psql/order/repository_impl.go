@@ -27,6 +27,7 @@ func (r *orderRepo) SaveWithDBTrx(appCtx *appContext.AppContext, tx *sql.Tx, dom
 	var query = `INSERT INTO commerce."order"(total) VALUES($1) RETURNING id`
 
 	if err = tx.QueryRow(query, domain.Total).Scan(&id); err != nil {
+		appCtx.Logger.Error(err.Error())
 		err = errors.New(constant.ErrorDatabaseProblem)
 		return
 	}
@@ -40,6 +41,7 @@ func (r *orderRepo) Get(appCtx *appContext.AppContext, id int64) (domain *domain
 	)
 
 	if err = r.db.QueryRow(query, id).Scan(&order.ID, &order.Total, &order.CreatedAt, &order.UpdatedAt); err != nil {
+		appCtx.Logger.Error(err.Error())
 		if errors.Is(err, sql.ErrNoRows) {
 			err = errors.New(constant.ErrorDataNotFound)
 			return
@@ -64,6 +66,7 @@ func (r *orderRepo) BeginDBTrx() (tx *sql.Tx, err error) {
 
 func (r *orderRepo) CommitDBTrx(appCtx *appContext.AppContext, tx *sql.Tx) (err error) {
 	if err = tx.Commit(); err != nil {
+		appCtx.Logger.Error(err.Error())
 		err = errors.New(constant.ErrorDatabaseProblem)
 		return
 	}
@@ -72,6 +75,7 @@ func (r *orderRepo) CommitDBTrx(appCtx *appContext.AppContext, tx *sql.Tx) (err 
 
 func (r *orderRepo) RollbackDBTrx(appCtx *appContext.AppContext, tx *sql.Tx) (err error) {
 	if err = tx.Rollback(); err != nil {
+		appCtx.Logger.Error(err.Error())
 		err = errors.New(constant.ErrorDatabaseProblem)
 		return
 	}

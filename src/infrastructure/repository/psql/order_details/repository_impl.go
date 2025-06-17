@@ -39,6 +39,7 @@ func (r *orderDetailsRepo) SaveBulkWithDBTrx(appCtx *appContext.AppContext, tx *
 
 	_, err = tx.Exec(fmt.Sprintf(query, strings.Join(values, ",")), valueArgs...)
 	if err != nil {
+		appCtx.Logger.Error(err.Error())
 		err = errors.New(constant.ErrorDatabaseProblem)
 		return
 	}
@@ -58,6 +59,7 @@ func (r *orderDetailsRepo) GetByOrderID(appCtx *appContext.AppContext, orderID i
 	for rows.Next() {
 		var domain domainOrderDetails.OrderDetails
 		if err = rows.Scan(&domain.ID, &domain.OrderID, &domain.ProductID, &domain.Quantity, &domain.Price, &domain.CreatedAt, &domain.UpdatedAt); err != nil {
+			appCtx.Logger.Error(err.Error())
 			err = errors.New(constant.ErrorDatabaseProblem)
 			return
 		}
@@ -67,6 +69,7 @@ func (r *orderDetailsRepo) GetByOrderID(appCtx *appContext.AppContext, orderID i
 
 	if len(domains) == 0 {
 		err = errors.New(constant.ErrorDataNotFound)
+		appCtx.Logger.Error(err.Error())
 		return
 	}
 

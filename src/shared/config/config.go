@@ -3,7 +3,7 @@ package config
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"os"
 	"strconv"
 )
@@ -44,7 +44,7 @@ func NewConfig(path string) (config *Config) {
 		panic(err)
 	}
 
-	b, err := ioutil.ReadAll(jsonFile)
+	b, err := io.ReadAll(jsonFile)
 	if err != nil {
 		panic(err)
 	}

@@ -28,6 +28,7 @@ func (r *brandRepo) Save(appCtx *appContext.AppContext, domain *domainBrand.Bran
 
 	_, err = r.db.Exec(query, domain.Name)
 	if err != nil {
+		appCtx.Logger.Error(err.Error())
 		err = errors.New(constant.ErrorDatabaseProblem)
 		return
 	}

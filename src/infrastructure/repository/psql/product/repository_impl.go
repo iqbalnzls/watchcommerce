@@ -28,6 +28,7 @@ func (r *productRepo) Save(appCtx *appContext.AppContext, domain *domainProduct.
 
 	_, err = r.db.Exec(query, domain.BrandID, domain.Name, domain.Price, domain.Quantity)
 	if err != nil {
+		appCtx.Logger.Error(err.Error())
 		err = errors.New(constant.ErrorDatabaseProblem)
 		return
 	}
@@ -42,6 +43,7 @@ func (r *productRepo) GetByID(appCtx *appContext.AppContext, id int64) (domain *
 	)
 
 	if err = r.db.QueryRow(query, id).Scan(&product.ID, &product.BrandID, &product.Name, &product.Price, &product.Quantity, &product.CreatedAt, &product.UpdatedAt); err != nil {
+		appCtx.Logger.Error(err.Error())
 		if errors.Is(err, sql.ErrNoRows) {
 			err = errors.New(constant.ErrorDataNotFound)
 			return
@@ -60,6 +62,7 @@ func (r *productRepo) GetByBrandID(appCtx *appContext.AppContext, brandID int64)
 
 	rows, err := r.db.Query(query, brandID)
 	if err != nil {
+		appCtx.Logger.Error(err.Error())
 		err = errors.New(constant.ErrorDatabaseProblem)
 		return
 	}
@@ -67,6 +70,7 @@ func (r *productRepo) GetByBrandID(appCtx *appContext.AppContext, brandID int64)
 	for rows.Next() {
 		var domain domainProduct.Product
 		if err = rows.Scan(&domain.ID, &domain.BrandID, &domain.Name, &domain.Price, &domain.Quantity, &domain.CreatedAt, &domain.UpdatedAt); err != nil {
+			appCtx.Logger.Error(err.Error())
 			err = errors.New(constant.ErrorDatabaseProblem)
 			return
 		}
@@ -76,6 +80,7 @@ func (r *productRepo) GetByBrandID(appCtx *appContext.AppContext, brandID int64)
 
 	if len(domains) == 0 {
 		err = errors.New(constant.ErrorDataNotFound)
+		appCtx.Logger.Error(err.Error())
 		return
 	}
 
@@ -87,6 +92,7 @@ func (r *productRepo) UpdateByQuantityWithDBTrx(appCtx *appContext.AppContext, t
 
 	_, err = tx.Exec(query, id, quantity)
 	if err != nil {
+		appCtx.Logger.Error(err.Error())
 		err = errors.New(constant.ErrorDatabaseProblem)
 		return
 	}

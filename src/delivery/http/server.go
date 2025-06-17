@@ -2,6 +2,7 @@ package http
 
 import (
 	"context"
+	"errors"
 	"log"
 	"net/http"
 	"os"
@@ -24,7 +25,7 @@ func StartHttpServer(mux *http.ServeMux, container *delivery.Container) {
 	signal.Notify(done, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
 
 	go func() {
-		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+		if err := srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			log.Fatalf("listen: %s\n", err)
 		}
 	}()

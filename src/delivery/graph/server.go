@@ -17,7 +17,7 @@ import (
 )
 
 func StartGraphQLServer(mux *http.ServeMux, container *delivery.Container) {
-	srv := handler.NewDefaultServer(NewExecutableSchema(Config{Resolvers: &Resolver{
+	srv := handler.New(NewExecutableSchema(Config{Resolvers: &Resolver{
 		productService: container.ProductService,
 		v:              container.Validator,
 	}}))
