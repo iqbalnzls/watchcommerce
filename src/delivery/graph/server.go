@@ -2,6 +2,7 @@ package graph
 
 import (
 	"context"
+	"errors"
 	"log"
 	"net/http"
 	"os"
@@ -21,19 +22,19 @@ func StartGraphQLServer(mux *http.ServeMux, container *delivery.Container) {
 		v:              container.Validator,
 	}}))
 
-	mux.HandleFunc("/", playground.Handler("GraphQL playground", "/query"))
-	mux.HandleFunc("/query", srv.ServeHTTP)
+	mux.Handle("/", playground.Handler("GraphQL playground", "/query"))
+	mux.Handle("/query", SetupMiddleware(srv))
 
 	server := http.Server{
 		Addr:    container.Config.Apps.GetGraphQLAddress(),
-		Handler: srv,
+		Handler: mux,
 	}
 
 	done := make(chan os.Signal, 1)
 	signal.Notify(done, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
 
 	go func() {
-		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+		if err := server.ListenAndServe(); err != nil && errors.Is(err, http.ErrServerClosed) {
 			log.Fatalf("listen: %s\n", err)
 		}
 	}()

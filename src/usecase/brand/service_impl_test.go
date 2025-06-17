@@ -9,14 +9,18 @@ import (
 
 	"github.com/iqbalnzls/watchcommerce/src/dto"
 	"github.com/iqbalnzls/watchcommerce/src/infrastructure/repository/psql/brand"
-	"github.com/iqbalnzls/watchcommerce/src/pkg/constant"
-	mocksPsql "github.com/iqbalnzls/watchcommerce/src/pkg/mock/infrastructure/repository/psql"
+	appContext "github.com/iqbalnzls/watchcommerce/src/shared/app_context"
+	"github.com/iqbalnzls/watchcommerce/src/shared/constant"
+	"github.com/iqbalnzls/watchcommerce/src/shared/logger"
+	mocksPsql "github.com/iqbalnzls/watchcommerce/src/shared/mock/infrastructure/repository/psql"
 	usecaseBrand "github.com/iqbalnzls/watchcommerce/src/usecase/brand"
 )
 
+var appCtx = appContext.NewAppContext(&logger.Log{})
+
 func TestNewBrandService(t *testing.T) {
 	type args struct {
-		brandRepo brand.BrandRepositoryIFace
+		brandRepo brand.RepositoryIFace
 	}
 	tests := []struct {
 		name      string
@@ -30,7 +34,7 @@ func TestNewBrandService(t *testing.T) {
 		{
 			name: "init service success",
 			args: args{
-				brandRepo: new(mocksPsql.BrandRepositoryIFaceMock),
+				brandRepo: &mocksPsql.BrandRepositoryIFaceMock{},
 			},
 		},
 	}
@@ -93,11 +97,11 @@ func Test_service_Save(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			brandRepo := new(mocksPsql.BrandRepositoryIFaceMock)
-			brandRepo.On("Save", mock.Anything).Return(tt.args.resp.brandRepo.save.err)
+			brandRepo := &mocksPsql.BrandRepositoryIFaceMock{}
+			brandRepo.On("Save", mock.Anything, mock.Anything).Return(tt.args.resp.brandRepo.save.err)
 
 			s := usecaseBrand.NewBrandService(brandRepo)
-			if err := s.Save(req); (err != nil) != tt.wantErr {
+			if err := s.Save(appCtx, req); (err != nil) != tt.wantErr {
 				t.Errorf("SaveWithDBTrx() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})

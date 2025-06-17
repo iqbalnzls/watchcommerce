@@ -7,7 +7,7 @@ import (
 
 	_ "github.com/lib/pq"
 
-	"github.com/iqbalnzls/watchcommerce/src/pkg/config"
+	"github.com/iqbalnzls/watchcommerce/src/shared/config"
 )
 
 func NewDatabase(config *config.DatabaseConfig) *sql.DB {

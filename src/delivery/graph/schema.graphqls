@@ -12,4 +12,5 @@ type Product {
 
 type Query {
   product(id: Int!): Product
+  productsByBrand(brandID: Int!): [Product!]! 
 }

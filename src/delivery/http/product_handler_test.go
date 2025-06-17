@@ -2,6 +2,7 @@ package http_test
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"errors"
 	"net/http"
@@ -13,15 +14,15 @@ import (
 
 	inHttp "github.com/iqbalnzls/watchcommerce/src/delivery/http"
 	"github.com/iqbalnzls/watchcommerce/src/dto"
-	"github.com/iqbalnzls/watchcommerce/src/pkg/constant"
-	mocksUsecaseProduct "github.com/iqbalnzls/watchcommerce/src/pkg/mock/usecase/product"
-	"github.com/iqbalnzls/watchcommerce/src/pkg/validator"
+	"github.com/iqbalnzls/watchcommerce/src/shared/constant"
+	mocksUsecaseProduct "github.com/iqbalnzls/watchcommerce/src/shared/mock/usecase/product"
+	"github.com/iqbalnzls/watchcommerce/src/shared/validator"
 	"github.com/iqbalnzls/watchcommerce/src/usecase/product"
 )
 
 func TestNewProductHandler(t *testing.T) {
 	type args struct {
-		productService product.ProductServiceIFace
+		productService product.ServiceIFace
 		v              *validator.DataValidator
 	}
 	tests := []struct {
@@ -39,7 +40,7 @@ func TestNewProductHandler(t *testing.T) {
 		{
 			name: "validator is nil",
 			args: args{
-				productService: new(mocksUsecaseProduct.ProductServiceIFaceMock),
+				productService: &mocksUsecaseProduct.ProductServiceIFaceMock{},
 			},
 			wantPanic: true,
 		},
@@ -156,7 +157,7 @@ func Test_productHandler_Get(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			productService := new(mocksUsecaseProduct.ProductServiceIFaceMock)
-			productService.On("Get", mock.Anything).Return(tt.args.resp.productService.get.data, tt.args.resp.productService.get.err)
+			productService.On("Get", mock.Anything, mock.Anything).Return(tt.args.resp.productService.get.data, tt.args.resp.productService.get.err)
 
 			req := httptest.NewRequest(tt.args.req.method, "/api/v1/product/get", nil)
 			q := req.URL.Query()
@@ -168,8 +169,10 @@ func Test_productHandler_Get(t *testing.T) {
 
 			rec := httptest.NewRecorder()
 
+			ctx := context.WithValue(req.Context(), constant.AppContext, appCtx)
+
 			h := inHttp.NewProductHandler(productService, validator.NewValidator())
-			h.Get(rec, req)
+			h.Get(rec, req.WithContext(ctx))
 		})
 	}
 }
@@ -264,7 +267,7 @@ func Test_productHandler_GetByBrandID(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			productService := new(mocksUsecaseProduct.ProductServiceIFaceMock)
-			productService.On("GetByBrandID", mock.Anything).Return(tt.args.resp.productService.getByBrandID.data, tt.args.resp.productService.getByBrandID.err)
+			productService.On("GetByBrandID", mock.Anything, mock.Anything).Return(tt.args.resp.productService.getByBrandID.data, tt.args.resp.productService.getByBrandID.err)
 
 			req := httptest.NewRequest(tt.args.req.method, "/api/v1/product/get", nil)
 			q := req.URL.Query()
@@ -276,8 +279,10 @@ func Test_productHandler_GetByBrandID(t *testing.T) {
 
 			rec := httptest.NewRecorder()
 
+			ctx := context.WithValue(req.Context(), constant.AppContext, appCtx)
+
 			h := inHttp.NewProductHandler(productService, validator.NewValidator())
-			h.GetByBrandID(rec, req)
+			h.GetByBrandID(rec, req.WithContext(ctx))
 		})
 	}
 }
@@ -373,7 +378,7 @@ func Test_productHandler_Save(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			productService := new(mocksUsecaseProduct.ProductServiceIFaceMock)
-			productService.On("Save", mock.Anything).Return(tt.args.resp.productService.save.err)
+			productService.On("Save", mock.Anything, mock.Anything).Return(tt.args.resp.productService.save.err)
 
 			b, _ := json.Marshal(tt.args.req.payload)
 
@@ -382,8 +387,10 @@ func Test_productHandler_Save(t *testing.T) {
 
 			rec := httptest.NewRecorder()
 
+			ctx := context.WithValue(req.Context(), constant.AppContext, appCtx)
+
 			h := inHttp.NewProductHandler(productService, validator.NewValidator())
-			h.Save(rec, req)
+			h.Save(rec, req.WithContext(ctx))
 		})
 	}
 }

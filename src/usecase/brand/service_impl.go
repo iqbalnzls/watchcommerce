@@ -3,13 +3,14 @@ package brand
 import (
 	"github.com/iqbalnzls/watchcommerce/src/dto"
 	"github.com/iqbalnzls/watchcommerce/src/infrastructure/repository/psql/brand"
+	appContext "github.com/iqbalnzls/watchcommerce/src/shared/app_context"
 )
 
 type service struct {
-	brandRepo brand.BrandRepositoryIFace
+	brandRepo brand.RepositoryIFace
 }
 
-func NewBrandService(brandRepo brand.BrandRepositoryIFace) BrandServiceIFace {
+func NewBrandService(brandRepo brand.RepositoryIFace) ServiceIFace {
 	if brandRepo == nil {
 		panic("brand repository is nil")
 	}
@@ -19,6 +20,6 @@ func NewBrandService(brandRepo brand.BrandRepositoryIFace) BrandServiceIFace {
 	}
 }
 
-func (s *service) Save(req *dto.CreateBrandRequest) (err error) {
-	return s.brandRepo.Save(toBrandDomain(req))
+func (s *service) Save(appCtx *appContext.AppContext, req *dto.CreateBrandRequest) (err error) {
+	return s.brandRepo.Save(appCtx, toBrandDomain(req))
 }

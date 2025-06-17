@@ -14,16 +14,20 @@ import (
 	"github.com/iqbalnzls/watchcommerce/src/infrastructure/repository/psql/order"
 	"github.com/iqbalnzls/watchcommerce/src/infrastructure/repository/psql/order_details"
 	"github.com/iqbalnzls/watchcommerce/src/infrastructure/repository/psql/product"
-	"github.com/iqbalnzls/watchcommerce/src/pkg/constant"
-	mocksPsql "github.com/iqbalnzls/watchcommerce/src/pkg/mock/infrastructure/repository/psql"
+	appContext "github.com/iqbalnzls/watchcommerce/src/shared/app_context"
+	"github.com/iqbalnzls/watchcommerce/src/shared/constant"
+	"github.com/iqbalnzls/watchcommerce/src/shared/logger"
+	mocksPsql "github.com/iqbalnzls/watchcommerce/src/shared/mock/infrastructure/repository/psql"
 	usecaseOrder "github.com/iqbalnzls/watchcommerce/src/usecase/order"
 )
 
+var appCtx = appContext.NewAppContext(&logger.Log{})
+
 func TestNewOrderService(t *testing.T) {
 	type args struct {
-		productRepo      product.ProductRepositoryIFace
-		orderRepo        order.OrderRepositoryIFace
-		orderDetailsRepo order_details.OrderDetailsRepositoryIFace
+		productRepo      product.RepositoryIFace
+		orderRepo        order.RepositoryIFace
+		orderDetailsRepo order_details.RepositoryIFace
 	}
 	tests := []struct {
 		name      string
@@ -33,33 +37,33 @@ func TestNewOrderService(t *testing.T) {
 		{
 			name: "product repository is nil",
 			args: args{
-				orderRepo:        new(mocksPsql.OrderRepositoryIFaceMock),
-				orderDetailsRepo: new(mocksPsql.OrderDetailsRepositoryIFaceMock),
+				orderRepo:        &mocksPsql.OrderRepositoryIFaceMock{},
+				orderDetailsRepo: &mocksPsql.OrderDetailsRepositoryIFaceMock{},
 			},
 			wantPanic: true,
 		},
 		{
 			name: "order repository is nil",
 			args: args{
-				productRepo:      new(mocksPsql.ProductRepositoryIFaceMock),
-				orderDetailsRepo: new(mocksPsql.OrderDetailsRepositoryIFaceMock),
+				productRepo:      &mocksPsql.ProductRepositoryIFaceMock{},
+				orderDetailsRepo: &mocksPsql.OrderDetailsRepositoryIFaceMock{},
 			},
 			wantPanic: true,
 		},
 		{
 			name: "order details repository is nil",
 			args: args{
-				productRepo: new(mocksPsql.ProductRepositoryIFaceMock),
-				orderRepo:   new(mocksPsql.OrderRepositoryIFaceMock),
+				productRepo: &mocksPsql.ProductRepositoryIFaceMock{},
+				orderRepo:   &mocksPsql.OrderRepositoryIFaceMock{},
 			},
 			wantPanic: true,
 		},
 		{
 			name: "init service success",
 			args: args{
-				productRepo:      new(mocksPsql.ProductRepositoryIFaceMock),
-				orderRepo:        new(mocksPsql.OrderRepositoryIFaceMock),
-				orderDetailsRepo: new(mocksPsql.OrderDetailsRepositoryIFaceMock),
+				productRepo:      &mocksPsql.ProductRepositoryIFaceMock{},
+				orderRepo:        &mocksPsql.OrderRepositoryIFaceMock{},
+				orderDetailsRepo: &mocksPsql.OrderDetailsRepositoryIFaceMock{},
 			},
 		},
 	}
@@ -187,16 +191,16 @@ func Test_orderService_Get(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			productRepo := new(mocksPsql.ProductRepositoryIFaceMock)
+			productRepo := &mocksPsql.ProductRepositoryIFaceMock{}
 
-			orderRepo := new(mocksPsql.OrderRepositoryIFaceMock)
-			orderRepo.On("Get", mock.Anything).Return(tt.args.resp.orderRepo.get.domain, tt.args.resp.orderRepo.get.err)
+			orderRepo := &mocksPsql.OrderRepositoryIFaceMock{}
+			orderRepo.On("Get", mock.Anything, mock.Anything).Return(tt.args.resp.orderRepo.get.domain, tt.args.resp.orderRepo.get.err)
 
-			orderDetailsRepo := new(mocksPsql.OrderDetailsRepositoryIFaceMock)
-			orderDetailsRepo.On("GetByOrderID", mock.Anything).Return(tt.args.resp.orderDetailsRepo.getByOrderID.domains, tt.args.resp.orderDetailsRepo.getByOrderID.err)
+			orderDetailsRepo := &mocksPsql.OrderDetailsRepositoryIFaceMock{}
+			orderDetailsRepo.On("GetByOrderID", mock.Anything, mock.Anything).Return(tt.args.resp.orderDetailsRepo.getByOrderID.domains, tt.args.resp.orderDetailsRepo.getByOrderID.err)
 
 			s := usecaseOrder.NewOrderService(productRepo, orderRepo, orderDetailsRepo)
-			gotResp, err := s.Get(req)
+			gotResp, err := s.Get(appCtx, req)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Get() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -255,14 +259,6 @@ func Test_orderService_Save(t *testing.T) {
 		resp resp
 		req  *dto.CreateOrderRequest
 	}
-
-	//db, mo, err := sqlmock.New()
-	//assert.NoError(t, err)
-	//
-	//mo.ExpectBegin()
-	//
-	//tx, err := db.Begin()
-	//assert.NoError(t, err)
 
 	var (
 		tests = []struct {
@@ -533,22 +529,22 @@ func Test_orderService_Save(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			productRepo := new(mocksPsql.ProductRepositoryIFaceMock)
-			productRepo.On("GetByID", mock.Anything).Return(tt.args.resp.productRepo.getByID.domain, tt.args.resp.productRepo.getByID.err)
-			productRepo.On("UpdateByQuantityWithDBTrx", mock.Anything, mock.Anything, mock.Anything).Return(tt.args.resp.productRepo.updateByQuantity.err)
+			productRepo := &mocksPsql.ProductRepositoryIFaceMock{}
+			productRepo.On("GetByID", mock.Anything, mock.Anything).Return(tt.args.resp.productRepo.getByID.domain, tt.args.resp.productRepo.getByID.err)
+			productRepo.On("UpdateByQuantityWithDBTrx", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(tt.args.resp.productRepo.updateByQuantity.err)
 
-			orderRepo := new(mocksPsql.OrderRepositoryIFaceMock)
-			orderRepo.On("SaveWithDBTrx", mock.Anything, mock.Anything).Return(tt.args.resp.orderRepo.save.id, tt.args.resp.orderRepo.save.err)
+			orderRepo := &mocksPsql.OrderRepositoryIFaceMock{}
+			orderRepo.On("SaveWithDBTrx", mock.Anything, mock.Anything, mock.Anything).Return(tt.args.resp.orderRepo.save.id, tt.args.resp.orderRepo.save.err)
 			orderRepo.On("BeginDBTrx").Return(tt.args.resp.orderRepo.beginBDTrx.tx, tt.args.resp.orderRepo.beginBDTrx.err)
-			orderRepo.On("RollbackDBTrx", mock.Anything).Return(nil)
-			orderRepo.On("CommitDBTrx", mock.Anything).Return(nil)
+			orderRepo.On("RollbackDBTrx", mock.Anything, mock.Anything).Return(nil)
+			orderRepo.On("CommitDBTrx", mock.Anything, mock.Anything).Return(nil)
 
-			orderDetailsRepo := new(mocksPsql.OrderDetailsRepositoryIFaceMock)
-			orderDetailsRepo.On("SaveBulkWithDBTrx", mock.Anything, mock.Anything, mock.Anything).Return(tt.args.resp.orderDetailsRepo.saveBulk.err)
+			orderDetailsRepo := &mocksPsql.OrderDetailsRepositoryIFaceMock{}
+			orderDetailsRepo.On("SaveBulkWithDBTrx", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(tt.args.resp.orderDetailsRepo.saveBulk.err)
 
 			s := usecaseOrder.NewOrderService(productRepo, orderRepo, orderDetailsRepo)
 
-			if err := s.Save(tt.args.req); (err != nil) != tt.wantErr {
+			if err := s.Save(appCtx, tt.args.req); (err != nil) != tt.wantErr {
 				t.Errorf("SaveWithDBTrx() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})

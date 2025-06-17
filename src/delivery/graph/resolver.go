@@ -1,7 +1,7 @@
 package graph
 
 import (
-	"github.com/iqbalnzls/watchcommerce/src/pkg/validator"
+	"github.com/iqbalnzls/watchcommerce/src/shared/validator"
 	"github.com/iqbalnzls/watchcommerce/src/usecase/product"
 )
 
@@ -10,6 +10,6 @@ import (
 // It serves as dependency injection for your app, add any dependencies you require here.
 
 type Resolver struct {
-	productService product.ProductServiceIFace
+	productService product.ServiceIFace
 	v              *validator.DataValidator
 }

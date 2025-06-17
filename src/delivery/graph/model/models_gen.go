@@ -9,3 +9,6 @@ type Product struct {
 	Price    int    `json:"price"`
 	Quantity int    `json:"quantity"`
 }
+
+type Query struct {
+}

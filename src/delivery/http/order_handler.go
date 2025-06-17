@@ -7,18 +7,18 @@ import (
 	"strconv"
 
 	"github.com/iqbalnzls/watchcommerce/src/dto"
-	"github.com/iqbalnzls/watchcommerce/src/pkg/constant"
-	"github.com/iqbalnzls/watchcommerce/src/pkg/utils"
-	"github.com/iqbalnzls/watchcommerce/src/pkg/validator"
+	appContext "github.com/iqbalnzls/watchcommerce/src/shared/app_context"
+	"github.com/iqbalnzls/watchcommerce/src/shared/constant"
+	"github.com/iqbalnzls/watchcommerce/src/shared/validator"
 	usecaseOrder "github.com/iqbalnzls/watchcommerce/src/usecase/order"
 )
 
 type orderHandler struct {
-	orderService usecaseOrder.OrderServiceIFace
+	orderService usecaseOrder.ServiceIFace
 	*validator.DataValidator
 }
 
-func NewOrderHandler(orderService usecaseOrder.OrderServiceIFace, v *validator.DataValidator) OrderHandlerIFace {
+func NewOrderHandler(orderService usecaseOrder.ServiceIFace, v *validator.DataValidator) OrderHandlerIFace {
 	if orderService == nil {
 		panic("order service is nil")
 	}
@@ -47,6 +47,7 @@ func (h *orderHandler) Save(w http.ResponseWriter, r *http.Request) {
 		req      *dto.CreateOrderRequest
 		baseResp dto.BaseResponse
 		err      error
+		appCtx   = appContext.ParsingAppContext(r.Context())
 	)
 
 	defer func() {
@@ -59,23 +60,20 @@ func (h *orderHandler) Save(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method != http.MethodPost {
 		err = errors.New(constant.ErrorInvalidHttpMethod)
-		utils.Error(err)
 		return
 	}
 
 	if err = json.NewDecoder(r.Body).Decode(&req); err != nil {
-		utils.Error(err)
 		err = errors.New(constant.ErrorBadRequest)
 		return
 	}
 
 	if err = h.Validate(req); err != nil {
-		utils.Error(err)
 		err = errors.New(constant.ErrorBadRequest)
 		return
 	}
 
-	if err = h.orderService.Save(req); err != nil {
+	if err = h.orderService.Save(appCtx, req); err != nil {
 		return
 	}
 
@@ -96,6 +94,7 @@ func (h *orderHandler) Get(w http.ResponseWriter, r *http.Request) {
 	var (
 		baseResp dto.BaseResponse
 		err      error
+		appCtx   = appContext.ParsingAppContext(r.Context())
 	)
 
 	defer func() {
@@ -108,7 +107,6 @@ func (h *orderHandler) Get(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method != http.MethodGet {
 		err = errors.New(constant.ErrorInvalidHttpMethod)
-		utils.Error(err)
 		return
 	}
 
@@ -119,12 +117,11 @@ func (h *orderHandler) Get(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err = h.Validate(req); err != nil {
-		utils.Error(err)
 		err = errors.New(constant.ErrorBadRequest)
 		return
 	}
 
-	data, err := h.orderService.Get(req)
+	data, err := h.orderService.Get(appCtx, req)
 	if err != nil {
 		return
 	}

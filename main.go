@@ -10,7 +10,7 @@ import (
 	"github.com/iqbalnzls/watchcommerce/src/delivery"
 	inGraphQL "github.com/iqbalnzls/watchcommerce/src/delivery/graph"
 	inHttp "github.com/iqbalnzls/watchcommerce/src/delivery/http"
-	"github.com/iqbalnzls/watchcommerce/src/pkg/constant"
+	"github.com/iqbalnzls/watchcommerce/src/shared/constant"
 )
 
 // @title Watchcommerce API Documentation
@@ -33,7 +33,6 @@ func main() {
 
 	fmt.Print(showBanner())
 	fmt.Printf(constant.AppVersion + "\n\n")
-	fmt.Print("+--------------------------------------------------------------+\n")
 
 	go inGraphQL.StartGraphQLServer(mux, container)
 	inHttp.StartHttpServer(mux, container)

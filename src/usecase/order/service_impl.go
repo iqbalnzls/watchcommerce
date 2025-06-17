@@ -7,20 +7,20 @@ import (
 
 	domainOrder "github.com/iqbalnzls/watchcommerce/src/domain"
 	"github.com/iqbalnzls/watchcommerce/src/dto"
-	"github.com/iqbalnzls/watchcommerce/src/infrastructure/repository/psql/order"
-	"github.com/iqbalnzls/watchcommerce/src/infrastructure/repository/psql/order_details"
-	"github.com/iqbalnzls/watchcommerce/src/infrastructure/repository/psql/product"
-	"github.com/iqbalnzls/watchcommerce/src/pkg/constant"
-	"github.com/iqbalnzls/watchcommerce/src/pkg/utils"
+	orderRepo "github.com/iqbalnzls/watchcommerce/src/infrastructure/repository/psql/order"
+	orderDetailsRepo "github.com/iqbalnzls/watchcommerce/src/infrastructure/repository/psql/order_details"
+	productRepo "github.com/iqbalnzls/watchcommerce/src/infrastructure/repository/psql/product"
+	appContext "github.com/iqbalnzls/watchcommerce/src/shared/app_context"
+	"github.com/iqbalnzls/watchcommerce/src/shared/constant"
 )
 
 type orderService struct {
-	productRepo      product.ProductRepositoryIFace
-	orderRepo        order.OrderRepositoryIFace
-	orderDetailsRepo order_details.OrderDetailsRepositoryIFace
+	productRepo      productRepo.RepositoryIFace
+	orderRepo        orderRepo.RepositoryIFace
+	orderDetailsRepo orderDetailsRepo.RepositoryIFace
 }
 
-func NewOrderService(productRepo product.ProductRepositoryIFace, orderRepo order.OrderRepositoryIFace, orderDetailsRepo order_details.OrderDetailsRepositoryIFace) OrderServiceIFace {
+func NewOrderService(productRepo productRepo.RepositoryIFace, orderRepo orderRepo.RepositoryIFace, orderDetailsRepo orderDetailsRepo.RepositoryIFace) ServiceIFace {
 	if productRepo == nil {
 		panic("product repository is nil")
 	}
@@ -38,7 +38,7 @@ func NewOrderService(productRepo product.ProductRepositoryIFace, orderRepo order
 	}
 }
 
-func (s *orderService) Save(req *dto.CreateOrderRequest) (err error) {
+func (s *orderService) Save(appCtx *appContext.AppContext, req *dto.CreateOrderRequest) (err error) {
 	var (
 		orderDetails = make([]domainOrder.OrderDetails, 0)
 		products     = make([]*domainOrder.Product, 0)
@@ -46,13 +46,12 @@ func (s *orderService) Save(req *dto.CreateOrderRequest) (err error) {
 	)
 
 	for _, order := range req.OrderDetails {
-		product, er := s.productRepo.GetByID(order.ProductID)
+		product, er := s.productRepo.GetByID(appCtx, order.ProductID)
 		if er != nil {
 			return er
 		}
 		if order.Quantity > product.Quantity {
 			err = errors.New(constant.ErrorStockNotAvailable)
-			utils.Error(err)
 			return
 		}
 		orderDetail := domainOrder.OrderDetails{
@@ -71,32 +70,32 @@ func (s *orderService) Save(req *dto.CreateOrderRequest) (err error) {
 		return
 	}
 
-	id, err := s.orderRepo.SaveWithDBTrx(tx, &domainOrder.Order{
+	id, err := s.orderRepo.SaveWithDBTrx(appCtx, tx, &domainOrder.Order{
 		Total: total,
 	})
 	if err != nil {
-		_ = s.orderRepo.RollbackDBTrx(tx)
+		_ = s.orderRepo.RollbackDBTrx(appCtx, tx)
 		return
 	}
 
-	if err = s.orderDetailsRepo.SaveBulkWithDBTrx(tx, id, orderDetails); err != nil {
-		_ = s.orderRepo.RollbackDBTrx(tx)
+	if err = s.orderDetailsRepo.SaveBulkWithDBTrx(appCtx, tx, id, orderDetails); err != nil {
+		_ = s.orderRepo.RollbackDBTrx(appCtx, tx)
 		return
 	}
 
 	for _, product := range products {
-		if err = s.productRepo.UpdateByQuantityWithDBTrx(tx, product.ID, product.Quantity); err != nil {
-			_ = s.orderRepo.RollbackDBTrx(tx)
+		if err = s.productRepo.UpdateByQuantityWithDBTrx(appCtx, tx, product.ID, product.Quantity); err != nil {
+			_ = s.orderRepo.RollbackDBTrx(appCtx, tx)
 			return
 		}
 	}
 
-	_ = s.orderRepo.CommitDBTrx(tx)
+	_ = s.orderRepo.CommitDBTrx(appCtx, tx)
 
 	return
 }
 
-func (s *orderService) Get(req *dto.GetOrderRequest) (resp dto.GetOrderResponse, err error) {
+func (s *orderService) Get(appCtx *appContext.AppContext, req *dto.GetOrderRequest) (resp dto.GetOrderResponse, err error) {
 	var (
 		eg           = new(errgroup.Group)
 		order        *domainOrder.Order
@@ -104,12 +103,12 @@ func (s *orderService) Get(req *dto.GetOrderRequest) (resp dto.GetOrderResponse,
 	)
 
 	eg.Go(func() (er error) {
-		order, er = s.orderRepo.Get(req.OrderID)
+		order, er = s.orderRepo.Get(appCtx, req.OrderID)
 		return
 	})
 
 	eg.Go(func() (er error) {
-		orderDetails, er = s.orderDetailsRepo.GetByOrderID(req.OrderID)
+		orderDetails, er = s.orderDetailsRepo.GetByOrderID(appCtx, req.OrderID)
 		return
 	})
 

@@ -2,8 +2,9 @@ package brand
 
 import (
 	"github.com/iqbalnzls/watchcommerce/src/domain"
+	appContext "github.com/iqbalnzls/watchcommerce/src/shared/app_context"
 )
 
-type BrandRepositoryIFace interface {
-	Save(domain *domain.Brand) (err error)
+type RepositoryIFace interface {
+	Save(appCtx *appContext.AppContext, domain *domain.Brand) (err error)
 }

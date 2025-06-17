@@ -1,8 +1,11 @@
 package order
 
-import "github.com/iqbalnzls/watchcommerce/src/dto"
+import (
+	"github.com/iqbalnzls/watchcommerce/src/dto"
+	appContext "github.com/iqbalnzls/watchcommerce/src/shared/app_context"
+)
 
-type OrderServiceIFace interface {
-	Save(req *dto.CreateOrderRequest) (err error)
-	Get(req *dto.GetOrderRequest) (resp dto.GetOrderResponse, err error)
+type ServiceIFace interface {
+	Save(appCtx *appContext.AppContext, req *dto.CreateOrderRequest) (err error)
+	Get(appCtx *appContext.AppContext, req *dto.GetOrderRequest) (resp dto.GetOrderResponse, err error)
 }

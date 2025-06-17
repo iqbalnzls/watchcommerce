@@ -12,8 +12,12 @@ import (
 	domainOrder "github.com/iqbalnzls/watchcommerce/src/domain"
 	"github.com/iqbalnzls/watchcommerce/src/infrastructure/repository/psql/order"
 	"github.com/iqbalnzls/watchcommerce/src/infrastructure/repository/psql/order_details"
-	"github.com/iqbalnzls/watchcommerce/src/pkg/constant"
+	appContext "github.com/iqbalnzls/watchcommerce/src/shared/app_context"
+	"github.com/iqbalnzls/watchcommerce/src/shared/constant"
+	"github.com/iqbalnzls/watchcommerce/src/shared/logger"
 )
+
+var appCtx = appContext.NewAppContext(&logger.Log{})
 
 func TestNewOrderRepository(t *testing.T) {
 	type args struct {
@@ -113,7 +117,7 @@ func Test_orderRepo_Get(t *testing.T) {
 			} else {
 				mock.ExpectQuery(`^SELECT (.+)FROM (.+)order`).WithArgs(sqlmock.AnyArg()).WillReturnRows(tt.args.resp.rows)
 			}
-			domain, err := r.Get(1)
+			domain, err := r.Get(appCtx, 1)
 			assert.Equal(t, tt.wantDomain, domain)
 			assert.Equal(t, tt.wantErr, err)
 		})
@@ -181,7 +185,7 @@ func Test_orderRepo_SaveWithDBTrx(t *testing.T) {
 			tx, err := db.Begin()
 			assert.NoError(t, err)
 
-			id, err := r.SaveWithDBTrx(tx, domain)
+			id, err := r.SaveWithDBTrx(appCtx, tx, domain)
 			assert.Equal(t, tt.wantErr, err)
 			assert.Equal(t, tt.wantId, id)
 		})
@@ -236,7 +240,7 @@ func Test_orderRepo_CommitDBTrx(t *testing.T) {
 			assert.NoError(t, err)
 
 			r := order.NewOrderRepository(db)
-			wantEr := r.CommitDBTrx(tx)
+			wantEr := r.CommitDBTrx(appCtx, tx)
 			assert.NoError(t, wantEr)
 		})
 	}
@@ -265,7 +269,7 @@ func Test_orderRepo_RollbackDBTrx(t *testing.T) {
 			assert.NoError(t, err)
 
 			r := order.NewOrderRepository(db)
-			err = r.RollbackDBTrx(tx)
+			err = r.RollbackDBTrx(appCtx, tx)
 			assert.NoError(t, err)
 		})
 	}

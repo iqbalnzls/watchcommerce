@@ -5,15 +5,15 @@ import (
 	"errors"
 
 	domainBrand "github.com/iqbalnzls/watchcommerce/src/domain"
-	"github.com/iqbalnzls/watchcommerce/src/pkg/constant"
-	"github.com/iqbalnzls/watchcommerce/src/pkg/utils"
+	appContext "github.com/iqbalnzls/watchcommerce/src/shared/app_context"
+	"github.com/iqbalnzls/watchcommerce/src/shared/constant"
 )
 
 type brandRepo struct {
 	db *sql.DB
 }
 
-func NewRepositoryBrand(db *sql.DB) BrandRepositoryIFace {
+func NewRepositoryBrand(db *sql.DB) RepositoryIFace {
 	if db == nil {
 		panic("db connection is nil")
 	}
@@ -23,12 +23,11 @@ func NewRepositoryBrand(db *sql.DB) BrandRepositoryIFace {
 	}
 }
 
-func (r *brandRepo) Save(domain *domainBrand.Brand) (err error) {
+func (r *brandRepo) Save(appCtx *appContext.AppContext, domain *domainBrand.Brand) (err error) {
 	var query = `INSERT INTO commerce.brand(name) VALUES($1)`
 
 	_, err = r.db.Exec(query, domain.Name)
 	if err != nil {
-		utils.Error(err)
 		err = errors.New(constant.ErrorDatabaseProblem)
 		return
 	}

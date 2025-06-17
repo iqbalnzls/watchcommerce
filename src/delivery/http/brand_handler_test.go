@@ -16,17 +16,17 @@ import (
 
 	inHttp "github.com/iqbalnzls/watchcommerce/src/delivery/http"
 	"github.com/iqbalnzls/watchcommerce/src/dto"
-	"github.com/iqbalnzls/watchcommerce/src/pkg/app_context"
-	"github.com/iqbalnzls/watchcommerce/src/pkg/constant"
-	"github.com/iqbalnzls/watchcommerce/src/pkg/logger"
-	mocksUsecaseBrand "github.com/iqbalnzls/watchcommerce/src/pkg/mock/usecase/brand"
-	"github.com/iqbalnzls/watchcommerce/src/pkg/validator"
+	"github.com/iqbalnzls/watchcommerce/src/shared/app_context"
+	"github.com/iqbalnzls/watchcommerce/src/shared/constant"
+	"github.com/iqbalnzls/watchcommerce/src/shared/logger"
+	mocksUsecaseBrand "github.com/iqbalnzls/watchcommerce/src/shared/mock/usecase/brand"
+	"github.com/iqbalnzls/watchcommerce/src/shared/validator"
 	usecaseBrand "github.com/iqbalnzls/watchcommerce/src/usecase/brand"
 )
 
 func TestNewBrandHandler(t *testing.T) {
 	type args struct {
-		brandService usecaseBrand.BrandServiceIFace
+		brandService usecaseBrand.ServiceIFace
 		v            *validator.DataValidator
 	}
 	tests := []struct {
@@ -73,7 +73,7 @@ func TestNewBrandHandler(t *testing.T) {
 
 func Test_brandHandler_Save(t *testing.T) {
 	type fields struct {
-		brandService  usecaseBrand.BrandServiceIFace
+		brandService  usecaseBrand.ServiceIFace
 		DataValidator *validator.DataValidator
 	}
 	type brandService struct {
@@ -157,7 +157,7 @@ func Test_brandHandler_Save(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			brandService := new(mocksUsecaseBrand.BrandServiceIFaceMock)
-			brandService.On("Save", mock.Anything).Return(tt.args.resp.brandService.err)
+			brandService.On("Save", mock.Anything, mock.Anything).Return(tt.args.resp.brandService.err)
 
 			b, _ := json.Marshal(tt.args.req.payload)
 
@@ -166,7 +166,7 @@ func Test_brandHandler_Save(t *testing.T) {
 
 			appCtx := app_context.NewAppContext(&logger.Log{
 				XID:         uuid.New().String(),
-				Time:        time.Now().String(),
+				Time:        time.Now(),
 				Path:        req.URL.Path,
 				ServiceName: constant.AppName,
 				Version:     constant.AppVersion,

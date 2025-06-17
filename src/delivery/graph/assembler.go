@@ -14,3 +14,9 @@ func toProduct(d dto.GetProductResponse) *model.Product {
 		Quantity: int(d.Quantity),
 	}
 }
+
+func toGetProductByBrandIDRequest(brandId int) *dto.GetProductByBrandIDRequest {
+	return &dto.GetProductByBrandIDRequest{
+		BrandID: int64(brandId),
+	}
+}

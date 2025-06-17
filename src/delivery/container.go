@@ -5,18 +5,18 @@ import (
 	"github.com/iqbalnzls/watchcommerce/src/infrastructure/repository/psql/order"
 	"github.com/iqbalnzls/watchcommerce/src/infrastructure/repository/psql/order_details"
 	infraPsql "github.com/iqbalnzls/watchcommerce/src/infrastructure/repository/psql/product"
-	"github.com/iqbalnzls/watchcommerce/src/pkg/config"
-	"github.com/iqbalnzls/watchcommerce/src/pkg/database"
-	"github.com/iqbalnzls/watchcommerce/src/pkg/validator"
+	"github.com/iqbalnzls/watchcommerce/src/shared/config"
+	"github.com/iqbalnzls/watchcommerce/src/shared/database"
+	"github.com/iqbalnzls/watchcommerce/src/shared/validator"
 	usecaseBrand "github.com/iqbalnzls/watchcommerce/src/usecase/brand"
 	usecaseOrder "github.com/iqbalnzls/watchcommerce/src/usecase/order"
 	usecaseProduct "github.com/iqbalnzls/watchcommerce/src/usecase/product"
 )
 
 type Container struct {
-	ProductService usecaseProduct.ProductServiceIFace
-	OrderService   usecaseOrder.OrderServiceIFace
-	BrandService   usecaseBrand.BrandServiceIFace
+	ProductService usecaseProduct.ServiceIFace
+	OrderService   usecaseOrder.ServiceIFace
+	BrandService   usecaseBrand.ServiceIFace
 	Validator      *validator.DataValidator
 	Config         *config.Config
 }

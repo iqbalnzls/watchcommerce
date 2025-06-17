@@ -1,9 +1,12 @@
 package product
 
-import "github.com/iqbalnzls/watchcommerce/src/dto"
+import (
+	"github.com/iqbalnzls/watchcommerce/src/dto"
+	appContext "github.com/iqbalnzls/watchcommerce/src/shared/app_context"
+)
 
-type ProductServiceIFace interface {
-	Save(req *dto.CreateProductRequest) (err error)
-	Get(req *dto.GetProductRequest) (resp dto.GetProductResponse, err error)
-	GetByBrandID(req *dto.GetProductByBrandIDRequest) (resp []dto.GetProductResponse, err error)
+type ServiceIFace interface {
+	Save(appCtx *appContext.AppContext, req *dto.CreateProductRequest) (err error)
+	Get(appCtx *appContext.AppContext, req *dto.GetProductRequest) (resp dto.GetProductResponse, err error)
+	GetByBrandID(appCtx *appContext.AppContext, req *dto.GetProductByBrandIDRequest) (resp []dto.GetProductResponse, err error)
 }

@@ -1,12 +1,12 @@
 package app_context
 
 import (
-	"net/http"
+	"context"
 
 	"go.uber.org/zap"
 
-	"github.com/iqbalnzls/watchcommerce/src/pkg/constant"
-	"github.com/iqbalnzls/watchcommerce/src/pkg/logger"
+	"github.com/iqbalnzls/watchcommerce/src/shared/constant"
+	"github.com/iqbalnzls/watchcommerce/src/shared/logger"
 )
 
 type AppContext struct {
@@ -30,8 +30,7 @@ func NewAppContext(log *logger.Log) *AppContext {
 	}
 }
 
-func ParsingAppContext(r *http.Request) *AppContext {
-	ctx := r.Context()
+func ParsingAppContext(ctx context.Context) *AppContext {
 	appCtx, ok := ctx.Value(constant.AppContext).(*AppContext)
 	if !ok {
 		panic("please set app context")

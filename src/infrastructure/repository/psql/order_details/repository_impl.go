@@ -7,15 +7,15 @@ import (
 	"strings"
 
 	domainOrderDetails "github.com/iqbalnzls/watchcommerce/src/domain"
-	"github.com/iqbalnzls/watchcommerce/src/pkg/constant"
-	"github.com/iqbalnzls/watchcommerce/src/pkg/utils"
+	appContext "github.com/iqbalnzls/watchcommerce/src/shared/app_context"
+	"github.com/iqbalnzls/watchcommerce/src/shared/constant"
 )
 
 type orderDetailsRepo struct {
 	db *sql.DB
 }
 
-func NewOrderDetailsRepository(db *sql.DB) OrderDetailsRepositoryIFace {
+func NewOrderDetailsRepository(db *sql.DB) RepositoryIFace {
 	if db == nil {
 		panic("db connection is nil")
 	}
@@ -25,7 +25,7 @@ func NewOrderDetailsRepository(db *sql.DB) OrderDetailsRepositoryIFace {
 	}
 }
 
-func (r *orderDetailsRepo) SaveBulkWithDBTrx(tx *sql.Tx, orderID int64, domains []domainOrderDetails.OrderDetails) (err error) {
+func (r *orderDetailsRepo) SaveBulkWithDBTrx(appCtx *appContext.AppContext, tx *sql.Tx, orderID int64, domains []domainOrderDetails.OrderDetails) (err error) {
 	var (
 		values    = make([]string, 0)
 		valueArgs = make([]interface{}, 0)
@@ -39,7 +39,6 @@ func (r *orderDetailsRepo) SaveBulkWithDBTrx(tx *sql.Tx, orderID int64, domains 
 
 	_, err = tx.Exec(fmt.Sprintf(query, strings.Join(values, ",")), valueArgs...)
 	if err != nil {
-		utils.Error(err)
 		err = errors.New(constant.ErrorDatabaseProblem)
 		return
 	}
@@ -47,12 +46,11 @@ func (r *orderDetailsRepo) SaveBulkWithDBTrx(tx *sql.Tx, orderID int64, domains 
 	return
 }
 
-func (r *orderDetailsRepo) GetByOrderID(orderID int64) (domains []*domainOrderDetails.OrderDetails, err error) {
+func (r *orderDetailsRepo) GetByOrderID(appCtx *appContext.AppContext, orderID int64) (domains []*domainOrderDetails.OrderDetails, err error) {
 	var query = `SELECT id, order_id, product_id, quantity, price, created_at, updated_at FROM commerce.order_details WHERE order_id = $1`
 
 	rows, err := r.db.Query(query, orderID)
 	if err != nil {
-		utils.Error(err)
 		err = errors.New(constant.ErrorDatabaseProblem)
 		return
 	}
@@ -60,7 +58,6 @@ func (r *orderDetailsRepo) GetByOrderID(orderID int64) (domains []*domainOrderDe
 	for rows.Next() {
 		var domain domainOrderDetails.OrderDetails
 		if err = rows.Scan(&domain.ID, &domain.OrderID, &domain.ProductID, &domain.Quantity, &domain.Price, &domain.CreatedAt, &domain.UpdatedAt); err != nil {
-			utils.Error(err)
 			err = errors.New(constant.ErrorDatabaseProblem)
 			return
 		}
@@ -70,7 +67,6 @@ func (r *orderDetailsRepo) GetByOrderID(orderID int64) (domains []*domainOrderDe
 
 	if len(domains) == 0 {
 		err = errors.New(constant.ErrorDataNotFound)
-		utils.Error(err)
 		return
 	}
 

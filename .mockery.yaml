@@ -1,0 +1,58 @@
+with-expecter: true
+packages:
+  "github.com/iqbalnzls/watchcommerce/src/infrastructure/repository/psql/brand":
+    config:
+      dir: "src/shared/mock/infrastructure/repository/psql"
+      filename: brand_repository_mock.go
+      mockname: BrandRepositoryIFaceMock
+      outpkg: mocks
+    interfaces:
+      RepositoryIFace:
+  "github.com/iqbalnzls/watchcommerce/src/infrastructure/repository/psql/order":
+    config:
+      dir: "src/shared/mock/infrastructure/repository/psql"
+      filename: order_repository_mock.go
+      mockname: OrderRepositoryIFaceMock
+      outpkg: mocks
+    interfaces:
+      RepositoryIFace:
+  "github.com/iqbalnzls/watchcommerce/src/infrastructure/repository/psql/order_details":
+    config:
+      dir: "src/shared/mock/infrastructure/repository/psql"
+      filename: order_details_repository_mock.go
+      mockname: OrderDetailsRepositoryIFaceMock
+      outpkg: mocks
+    interfaces:
+      RepositoryIFace:
+  "github.com/iqbalnzls/watchcommerce/src/infrastructure/repository/psql/product":
+    config:
+      dir: "src/shared/mock/infrastructure/repository/psql"
+      filename: product_repository_mock.go
+      mockname: ProductRepositoryIFaceMock
+      outpkg: mocks
+    interfaces:
+      RepositoryIFace:
+  "github.com/iqbalnzls/watchcommerce/src/usecase/brand":
+    config:
+      dir: "src/shared/mock/usecase/brand"
+      filename: service_mock.go
+      mockname: BrandServiceIFaceMock
+      outpkg: mocks
+    interfaces:
+      ServiceIFace:
+  "github.com/iqbalnzls/watchcommerce/src/usecase/order":
+    config:
+      dir: "src/shared/mock/usecase/order"
+      filename: service_mock.go
+      mockname: OrderServiceIFaceMock
+      outpkg: mocks
+    interfaces:
+      ServiceIFace:
+  "github.com/iqbalnzls/watchcommerce/src/usecase/product":
+    config:
+      dir: "src/shared/mock/usecase/product"
+      filename: service_mock.go
+      mockname: ProductServiceIFaceMock
+      outpkg: mocks
+    interfaces:
+      ServiceIFace:

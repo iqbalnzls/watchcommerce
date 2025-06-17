@@ -2,12 +2,12 @@
   "apps" : {
     "name" : "watchcommerce",
     "httpPort" : 8000,
-    "graphQLPort": 9221
+    "graphQLPort" : 8001
   },
   "database" : {
     "host" : "localhost",
-    "username" : "iqbalnazulis",
-    "password" : "123456789",
+    "username" : "commerce",
+    "password" : "commerce",
     "port" : 5432,
     "name" : "watchcommerce",
     "minIdleConnections": 5,

@@ -1,9 +1,14 @@
-# watchcommerce
+# ⌚ WatchCommerce
 
-watchcommerce is a simple CRUD project which has some functionality such as the following,  
+WatchCommerce is a lightweight, containerized e-commerce API built with **Golang** and **PostgreSQL**, designed to manage watch brands, products, and orders. This project features a modular architecture, Swagger documentation, and Docker support for ease of setup and testing.
+
+---
+
+## 📦 Features
 
 
-- **Create Brand** `/api/v1/brand/save`
+### ✅ Brand APIs
+- **Create Brand**
     
     API to create a watch brands
     
@@ -16,7 +21,8 @@ watchcommerce is a simple CRUD project which has some functionality such as the 
     ```
 
 
-- **Create Product** `/api/v1/product/save`
+### 📦 Product APIs
+- **Create Product**
 
     API to create a watch product with spesific brand
 
@@ -31,7 +37,7 @@ watchcommerce is a simple CRUD project which has some functionality such as the 
     }'
     ```
 
-- **Get Product By Its Brand** `/api/v1/product/brand/get`
+- **Get Product By Its Brand**
 
     API to get a product by its brand `id`
 
@@ -39,7 +45,7 @@ watchcommerce is a simple CRUD project which has some functionality such as the 
     curl --location --request GET 'localhost:8000/api/v1/product/brand/get?id=1'
     ```
   
-- **Get Product By ID** `/api/v1/product/get`
+- **Get Product By ID**
     
     API to get a product by its `id`
 
@@ -47,7 +53,25 @@ watchcommerce is a simple CRUD project which has some functionality such as the 
     curl --location --request GET 'localhost:8000/api/v1/product/get?id=1'
     ```
   
-- **Create Order** `/api/v1/order/save`
+    ### GraphQL APIs
+- **Get Product By ID (GraphQL)**
+
+    API to get a product by its `id` using GraphQL
+    
+    Endpoint: `http://localhost:8001/query`
+
+    ```graphql
+    query GetProduct($productId: Int!) {
+      product(id: $productId) {
+        id
+        name
+        price
+      }
+    }
+    ```
+
+### 🛒 Order APIs
+- **Create Order**
 
     API to make an order
 
@@ -68,51 +92,53 @@ watchcommerce is a simple CRUD project which has some functionality such as the 
     }'
     ```
   
-- **Get Order** (`/api/v1/order/get`)
+- **Get Order**
 
     API to get an order that has been done
 
     ```sh
     curl --location --request GET 'localhost:8000/api/v1/order/get?id=1'
     ```
-  
-
-## How to run ?
 
 
-- Make sure you're in the project directory, then just type the following command in your terminal
+## 🚀 Getting Started
 
+
+1. Ensure you have run docker on your local computer, then type the following command in the terminal
     ```sh
     make run
     ```
-  
-    Then, you've to execute the `watchcommerce.sql` in the migrations directory in the postgres container. To do this, first, type the following command
-
-    ```sh
-    docker exec -it watchcommerce_db psql -U commerce -W watchcommerce
-    ```
-  
-    After that, you can execute the sql
+    This will spin up both the app and PostgreSQL using Docker.  
 
 
+2. Run Migrations 
+   
+   Once the containers are up, you need to run the migrations to set up the database schema. You can do this by executing:
 
+   ```sh
+   docker exec -it watchcommerce_db psql -U commerce -W watchcommerce
+   ```
 
-- You can stop the container by
+3. Stop the containers
+
+    After you are done, you can stop the containers by running:
 
     ```sh
     make stop
     ```
 
 
+### 🧪 Testing
 
-- To run unit test by 
+- To run the tests, you can use the following command:
 
     ```sh
     make test
     ```
   
-- To open swagger ui
+### 📖 Documentation
   
+- The API documentation is available via Swagger. You can access it by navigating to:
     ```sh
     http://localhost:8000/swagger/index.html#/
     ```

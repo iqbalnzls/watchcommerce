@@ -2,6 +2,7 @@ package http_test
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"errors"
 	"net/http"
@@ -13,15 +14,19 @@ import (
 
 	inHttp "github.com/iqbalnzls/watchcommerce/src/delivery/http"
 	"github.com/iqbalnzls/watchcommerce/src/dto"
-	"github.com/iqbalnzls/watchcommerce/src/pkg/constant"
-	mocksUsecaseOrder "github.com/iqbalnzls/watchcommerce/src/pkg/mock/usecase/order"
-	"github.com/iqbalnzls/watchcommerce/src/pkg/validator"
+	appContext "github.com/iqbalnzls/watchcommerce/src/shared/app_context"
+	"github.com/iqbalnzls/watchcommerce/src/shared/constant"
+	"github.com/iqbalnzls/watchcommerce/src/shared/logger"
+	mocksUsecaseOrder "github.com/iqbalnzls/watchcommerce/src/shared/mock/usecase/order"
+	"github.com/iqbalnzls/watchcommerce/src/shared/validator"
 	"github.com/iqbalnzls/watchcommerce/src/usecase/order"
 )
 
+var appCtx = appContext.NewAppContext(&logger.Log{})
+
 func TestNewOrderHandler(t *testing.T) {
 	type args struct {
-		orderService order.OrderServiceIFace
+		orderService order.ServiceIFace
 		v            *validator.DataValidator
 	}
 	tests := []struct {
@@ -157,7 +162,7 @@ func Test_orderHandler_Get(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			orderService := new(mocksUsecaseOrder.OrderServiceIFaceMock)
-			orderService.On("Get", mock.Anything).Return(tt.args.resp.orderService.data, tt.args.resp.orderService.err)
+			orderService.On("Get", mock.Anything, mock.Anything).Return(tt.args.resp.orderService.data, tt.args.resp.orderService.err)
 
 			req := httptest.NewRequest(tt.args.req.method, "/api/v1/order/get", nil)
 			q := req.URL.Query()
@@ -167,10 +172,12 @@ func Test_orderHandler_Get(t *testing.T) {
 
 			req.URL.RawQuery = q.Encode()
 
+			ctx := context.WithValue(req.Context(), constant.AppContext, appCtx)
+
 			rec := httptest.NewRecorder()
 
 			h := inHttp.NewOrderHandler(orderService, validator.NewValidator())
-			h.Get(rec, req)
+			h.Get(rec, req.WithContext(ctx))
 		})
 	}
 }
@@ -279,7 +286,7 @@ func Test_orderHandler_Save(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			orderService := new(mocksUsecaseOrder.OrderServiceIFaceMock)
-			orderService.On("Save", mock.Anything).Return(tt.args.resp.orderService.save.err)
+			orderService.On("Save", mock.Anything, mock.Anything).Return(tt.args.resp.orderService.save.err)
 
 			b, _ := json.Marshal(tt.args.req.payload)
 
@@ -288,8 +295,10 @@ func Test_orderHandler_Save(t *testing.T) {
 
 			rec := httptest.NewRecorder()
 
+			ctx := context.WithValue(req.Context(), constant.AppContext, appCtx)
+
 			h := inHttp.NewOrderHandler(orderService, validator.NewValidator())
-			h.Save(rec, req)
+			h.Save(rec, req.WithContext(ctx))
 		})
 	}
 }

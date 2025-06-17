@@ -17,7 +17,7 @@ type Log struct {
 	Header      interface{}
 	Req         interface{}
 	Resp        interface{}
-	Time        string
+	Time        time.Time
 	Err         string
 	ZapLog      *zap.Logger
 }
@@ -29,7 +29,6 @@ type Logger interface {
 	FinishedRequest(resp interface{}, message ...string)
 	Info(message ...string)
 	Error(message ...string)
-	SetError(str string)
 	SetRequest(req interface{})
 }
 
@@ -56,6 +55,7 @@ func (l *Log) FinishedRequest(resp interface{}, message ...string) {
 		{Key: "resp", Interface: resp, Type: zapcore.ReflectType},
 		{Key: "err", String: l.Err, Type: zapcore.StringType},
 		{Key: "header", Interface: l.Header, Type: zapcore.ReflectType},
+		{Key: "rt", Integer: time.Now().Sub(l.Time).Milliseconds(), Type: zapcore.Int64Type},
 	}
 
 	l.ZapLog.Info("Finished Request", append(fields, composeField(l, message)...)...)
@@ -67,10 +67,6 @@ func (l *Log) Info(messages ...string) {
 
 func (l *Log) Error(message ...string) {
 	l.ZapLog.Error("Error", composeField(l, message)...)
-}
-
-func (l *Log) SetError(str string) {
-	l.Err = str
 }
 
 func (l *Log) SetRequest(req interface{}) {
@@ -92,6 +88,6 @@ func composeField(l *Log, msg []string) []zap.Field {
 		{Key: "path", String: l.Path, Type: zapcore.StringType},
 		{Key: "service_name", String: l.ServiceName, Type: zapcore.StringType},
 		{Key: "version", String: l.Version, Type: zapcore.StringType},
-		{Key: "time", String: l.Time, Type: zapcore.StringType},
+		{Key: "time", String: l.Time.Format(time.RFC3339), Type: zapcore.StringType},
 	}...)
 }

@@ -7,10 +7,10 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/iqbalnzls/watchcommerce/src/pkg/app_context"
-	"github.com/iqbalnzls/watchcommerce/src/pkg/constant"
-	"github.com/iqbalnzls/watchcommerce/src/pkg/logger"
-	"github.com/iqbalnzls/watchcommerce/src/pkg/utils"
+	"github.com/iqbalnzls/watchcommerce/src/shared/app_context"
+	"github.com/iqbalnzls/watchcommerce/src/shared/constant"
+	"github.com/iqbalnzls/watchcommerce/src/shared/logger"
+	"github.com/iqbalnzls/watchcommerce/src/shared/utils"
 )
 
 type Middleware func(next http.HandlerFunc) http.HandlerFunc
@@ -30,7 +30,7 @@ func SetupMiddleware() Middleware {
 
 			appCtx := app_context.NewAppContext(&logger.Log{
 				XID:         uuid.New().String(),
-				Time:        time.Now().String(),
+				Time:        time.Now(),
 				Path:        r.URL.Path,
 				ServiceName: constant.AppName,
 				Version:     constant.AppVersion,

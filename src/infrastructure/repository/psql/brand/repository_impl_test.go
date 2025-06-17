@@ -12,8 +12,12 @@ import (
 
 	domainBrand "github.com/iqbalnzls/watchcommerce/src/domain"
 	"github.com/iqbalnzls/watchcommerce/src/infrastructure/repository/psql/brand"
-	"github.com/iqbalnzls/watchcommerce/src/pkg/constant"
+	appContext "github.com/iqbalnzls/watchcommerce/src/shared/app_context"
+	"github.com/iqbalnzls/watchcommerce/src/shared/constant"
+	"github.com/iqbalnzls/watchcommerce/src/shared/logger"
 )
+
+var appCtx = appContext.NewAppContext(&logger.Log{})
 
 func TestNewRepositoryBrand(t *testing.T) {
 	type args struct {
@@ -102,7 +106,7 @@ func Test_brandRepo_Save(t *testing.T) {
 			} else {
 				mock.ExpectExec(`^INSERT INTO (.+)brand`).WithArgs(sqlmock.AnyArg()).WillReturnResult(tt.args.resp.result)
 			}
-			err = r.Save(domain)
+			err = r.Save(appCtx, domain)
 			assert.Equal(t, tt.wantErr, err)
 		})
 	}

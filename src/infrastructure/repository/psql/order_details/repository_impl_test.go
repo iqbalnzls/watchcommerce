@@ -12,8 +12,12 @@ import (
 
 	domainOrderDetails "github.com/iqbalnzls/watchcommerce/src/domain"
 	"github.com/iqbalnzls/watchcommerce/src/infrastructure/repository/psql/order_details"
-	"github.com/iqbalnzls/watchcommerce/src/pkg/constant"
+	appContext "github.com/iqbalnzls/watchcommerce/src/shared/app_context"
+	"github.com/iqbalnzls/watchcommerce/src/shared/constant"
+	"github.com/iqbalnzls/watchcommerce/src/shared/logger"
 )
+
+var appCtx = appContext.NewAppContext(&logger.Log{})
 
 func TestNewOrderDetailsRepository(t *testing.T) {
 	type args struct {
@@ -135,7 +139,7 @@ func Test_orderDetailsRepo_GetByOrderID(t *testing.T) {
 				mock.ExpectQuery(`^SELECT (.+)FROM (.+)order_details`).WithArgs(sqlmock.AnyArg()).WillReturnRows(tt.args.resp.rows)
 			}
 
-			domain, err := r.GetByOrderID(orderID)
+			domain, err := r.GetByOrderID(appCtx, orderID)
 			assert.Equal(t, tt.wantErr, err)
 			assert.Equal(t, tt.wantDomains, domain)
 		})
@@ -200,7 +204,7 @@ func Test_orderDetailsRepo_SaveBulkWithDBTrx(t *testing.T) {
 			tx, err := db.Begin()
 			assert.NoError(t, err)
 
-			err = r.SaveBulkWithDBTrx(tx, orderID, domains)
+			err = r.SaveBulkWithDBTrx(appCtx, tx, orderID, domains)
 			assert.Equal(t, tt.wantErr, err)
 		})
 	}

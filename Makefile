@@ -12,10 +12,10 @@ test:
 	go tool cover -func coverage.cov
 
 run:
-	docker-compose up --build -d
+	docker compose up --build -d
 
 stop:
-	docker-compose down
+	docker compose down
 
 mock:
 	@echo "Generate Mock Interface.."

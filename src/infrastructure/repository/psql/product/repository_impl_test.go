@@ -12,8 +12,12 @@ import (
 
 	domainProduct "github.com/iqbalnzls/watchcommerce/src/domain"
 	"github.com/iqbalnzls/watchcommerce/src/infrastructure/repository/psql/product"
-	"github.com/iqbalnzls/watchcommerce/src/pkg/constant"
+	appContext "github.com/iqbalnzls/watchcommerce/src/shared/app_context"
+	"github.com/iqbalnzls/watchcommerce/src/shared/constant"
+	"github.com/iqbalnzls/watchcommerce/src/shared/logger"
 )
+
+var appCtx = appContext.NewAppContext(&logger.Log{})
 
 func TestNewProductRepository(t *testing.T) {
 	type args struct {
@@ -135,7 +139,7 @@ func Test_productRepo_GetByBrandID(t *testing.T) {
 				mock.ExpectQuery(`^SELECT (.+) FROM (.+)product`).WithArgs(sqlmock.AnyArg()).WillReturnRows(tt.args.resp.rows)
 			}
 
-			gotDomains, err := r.GetByBrandID(brandID)
+			gotDomains, err := r.GetByBrandID(appCtx, brandID)
 			assert.Equal(t, tt.wantErr, err)
 			assert.Equal(t, tt.wantDomains, gotDomains)
 		})
@@ -212,7 +216,7 @@ func Test_productRepo_GetByID(t *testing.T) {
 				mock.ExpectQuery(`^SELECT (.+) FROM (.+)product`).WithArgs(sqlmock.AnyArg()).WillReturnRows(tt.args.resp.rows)
 			}
 
-			gotDomain, err := r.GetByID(id)
+			gotDomain, err := r.GetByID(appCtx, id)
 			assert.Equal(t, tt.wantErr, err)
 			assert.Equal(t, tt.wantDomain, gotDomain)
 		})
@@ -271,7 +275,7 @@ func Test_productRepo_Save(t *testing.T) {
 				mock.ExpectExec(`^INSERT INTO (.+)product`).WithArgs(sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg()).WillReturnResult(tt.args.resp.result)
 			}
 
-			err := r.Save(domain)
+			err := r.Save(appCtx, domain)
 			assert.Equal(t, tt.wantErr, err)
 		})
 	}
@@ -331,7 +335,7 @@ func Test_productRepo_UpdateByQuantity(t *testing.T) {
 			tx, err := db.Begin()
 			assert.NoError(t, err)
 
-			err = r.UpdateByQuantityWithDBTrx(tx, id, quantity)
+			err = r.UpdateByQuantityWithDBTrx(appCtx, tx, id, quantity)
 			assert.Equal(t, tt.wantErr, err)
 		})
 	}

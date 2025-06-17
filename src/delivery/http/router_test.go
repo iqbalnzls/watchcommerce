@@ -13,10 +13,10 @@ import (
 	"github.com/iqbalnzls/watchcommerce/src/delivery"
 	inHttp "github.com/iqbalnzls/watchcommerce/src/delivery/http"
 	"github.com/iqbalnzls/watchcommerce/src/dto"
-	mocksUsecaseBrand "github.com/iqbalnzls/watchcommerce/src/pkg/mock/usecase/brand"
-	mocks "github.com/iqbalnzls/watchcommerce/src/pkg/mock/usecase/order"
-	mocksUsecaseProduct "github.com/iqbalnzls/watchcommerce/src/pkg/mock/usecase/product"
-	"github.com/iqbalnzls/watchcommerce/src/pkg/validator"
+	mocksUsecaseBrand "github.com/iqbalnzls/watchcommerce/src/shared/mock/usecase/brand"
+	mocks "github.com/iqbalnzls/watchcommerce/src/shared/mock/usecase/order"
+	mocksUsecaseProduct "github.com/iqbalnzls/watchcommerce/src/shared/mock/usecase/product"
+	"github.com/iqbalnzls/watchcommerce/src/shared/validator"
 )
 
 func TestSetupRouter(t *testing.T) {

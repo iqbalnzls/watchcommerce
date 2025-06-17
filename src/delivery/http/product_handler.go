@@ -7,18 +7,18 @@ import (
 	"strconv"
 
 	"github.com/iqbalnzls/watchcommerce/src/dto"
-	"github.com/iqbalnzls/watchcommerce/src/pkg/constant"
-	"github.com/iqbalnzls/watchcommerce/src/pkg/utils"
-	"github.com/iqbalnzls/watchcommerce/src/pkg/validator"
+	appContext "github.com/iqbalnzls/watchcommerce/src/shared/app_context"
+	"github.com/iqbalnzls/watchcommerce/src/shared/constant"
+	"github.com/iqbalnzls/watchcommerce/src/shared/validator"
 	usecaseProduct "github.com/iqbalnzls/watchcommerce/src/usecase/product"
 )
 
 type productHandler struct {
-	productService usecaseProduct.ProductServiceIFace
+	productService usecaseProduct.ServiceIFace
 	*validator.DataValidator
 }
 
-func NewProductHandler(productService usecaseProduct.ProductServiceIFace, v *validator.DataValidator) ProductHandlerIFace {
+func NewProductHandler(productService usecaseProduct.ServiceIFace, v *validator.DataValidator) ProductHandlerIFace {
 	if productService == nil {
 		panic("product service is nil")
 	}
@@ -47,6 +47,7 @@ func (h *productHandler) Save(w http.ResponseWriter, r *http.Request) {
 		req      *dto.CreateProductRequest
 		baseResp dto.BaseResponse
 		err      error
+		appCtx   = appContext.ParsingAppContext(r.Context())
 	)
 
 	defer func() {
@@ -59,23 +60,20 @@ func (h *productHandler) Save(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method != http.MethodPost {
 		err = errors.New(constant.ErrorInvalidHttpMethod)
-		utils.Error(err)
 		return
 	}
 
 	if err = json.NewDecoder(r.Body).Decode(&req); err != nil {
-		utils.Error(err)
 		err = errors.New(constant.ErrorBadRequest)
 		return
 	}
 
 	if err = h.Validate(req); err != nil {
-		utils.Error(err)
 		err = errors.New(constant.ErrorBadRequest)
 		return
 	}
 
-	if err = h.productService.Save(req); err != nil {
+	if err = h.productService.Save(appCtx, req); err != nil {
 		return
 	}
 
@@ -96,6 +94,7 @@ func (h *productHandler) Get(w http.ResponseWriter, r *http.Request) {
 	var (
 		baseResp dto.BaseResponse
 		err      error
+		appCtx   = appContext.ParsingAppContext(r.Context())
 	)
 
 	defer func() {
@@ -108,7 +107,6 @@ func (h *productHandler) Get(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method != http.MethodGet {
 		err = errors.New(constant.ErrorInvalidHttpMethod)
-		utils.Error(err)
 		return
 	}
 
@@ -119,12 +117,11 @@ func (h *productHandler) Get(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err = h.Validate(req); err != nil {
-		utils.Error(err)
 		err = errors.New(constant.ErrorBadRequest)
 		return
 	}
 
-	data, err := h.productService.Get(req)
+	data, err := h.productService.Get(appCtx, req)
 	if err != nil {
 		return
 	}
@@ -146,6 +143,7 @@ func (h *productHandler) GetByBrandID(w http.ResponseWriter, r *http.Request) {
 	var (
 		baseResp dto.BaseResponse
 		err      error
+		appCtx   = appContext.ParsingAppContext(r.Context())
 	)
 
 	defer func() {
@@ -158,7 +156,6 @@ func (h *productHandler) GetByBrandID(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method != http.MethodGet {
 		err = errors.New(constant.ErrorInvalidHttpMethod)
-		utils.Error(err)
 		return
 	}
 
@@ -169,12 +166,11 @@ func (h *productHandler) GetByBrandID(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err = h.Validate(req); err != nil {
-		utils.Error(err)
 		err = errors.New(constant.ErrorBadRequest)
 		return
 	}
 
-	data, err := h.productService.GetByBrandID(req)
+	data, err := h.productService.GetByBrandID(appCtx, req)
 	if err != nil {
 		return
 	}

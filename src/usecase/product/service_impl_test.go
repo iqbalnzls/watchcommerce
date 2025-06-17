@@ -11,14 +11,18 @@ import (
 	domainProduct "github.com/iqbalnzls/watchcommerce/src/domain"
 	"github.com/iqbalnzls/watchcommerce/src/dto"
 	"github.com/iqbalnzls/watchcommerce/src/infrastructure/repository/psql/product"
-	"github.com/iqbalnzls/watchcommerce/src/pkg/constant"
-	mocksPsql "github.com/iqbalnzls/watchcommerce/src/pkg/mock/infrastructure/repository/psql"
+	appContext "github.com/iqbalnzls/watchcommerce/src/shared/app_context"
+	"github.com/iqbalnzls/watchcommerce/src/shared/constant"
+	"github.com/iqbalnzls/watchcommerce/src/shared/logger"
+	mocksPsql "github.com/iqbalnzls/watchcommerce/src/shared/mock/infrastructure/repository/psql"
 	usecaseProduct "github.com/iqbalnzls/watchcommerce/src/usecase/product"
 )
 
+var appCtx = appContext.NewAppContext(&logger.Log{})
+
 func TestNewProductService(t *testing.T) {
 	type args struct {
-		productRepo product.ProductRepositoryIFace
+		productRepo product.RepositoryIFace
 	}
 	tests := []struct {
 		name      string
@@ -114,10 +118,10 @@ func Test_productService_Get(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			productRepo := new(mocksPsql.ProductRepositoryIFaceMock)
-			productRepo.On("GetByID", mock.Anything).Return(tt.args.productRepo.getByID.domain, tt.args.productRepo.getByID.err)
+			productRepo.On("GetByID", mock.Anything, mock.Anything).Return(tt.args.productRepo.getByID.domain, tt.args.productRepo.getByID.err)
 
 			s := usecaseProduct.NewProductService(productRepo)
-			gotResp, err := s.Get(req)
+			gotResp, err := s.Get(appCtx, req)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Get() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -208,10 +212,10 @@ func Test_productService_GetByBrandID(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			productRepo := new(mocksPsql.ProductRepositoryIFaceMock)
-			productRepo.On("GetByBrandID", mock.Anything).Return(tt.args.resp.productRepo.getByBrandID.domains, tt.args.resp.productRepo.getByBrandID.err)
+			productRepo.On("GetByBrandID", mock.Anything, mock.Anything).Return(tt.args.resp.productRepo.getByBrandID.domains, tt.args.resp.productRepo.getByBrandID.err)
 
 			s := usecaseProduct.NewProductService(productRepo)
-			gotResp, err := s.GetByBrandID(req)
+			gotResp, err := s.GetByBrandID(appCtx, req)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("GetByBrandID() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -271,10 +275,10 @@ func Test_productService_Save(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			productRepo := new(mocksPsql.ProductRepositoryIFaceMock)
-			productRepo.On("Save", mock.Anything).Return(tt.args.resp.productRepo.save.err)
+			productRepo.On("Save", mock.Anything, mock.Anything).Return(tt.args.resp.productRepo.save.err)
 
 			s := usecaseProduct.NewProductService(productRepo)
-			if err := s.Save(req); (err != nil) != tt.wantErr {
+			if err := s.Save(appCtx, req); (err != nil) != tt.wantErr {
 				t.Errorf("SaveWithDBTrx() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
