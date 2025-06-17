@@ -52,23 +52,6 @@ WatchCommerce is a lightweight, containerized e-commerce API built with **Golang
     ```sh
     curl --location --request GET 'localhost:8000/api/v1/product/get?id=1'
     ```
-  
-    ### GraphQL APIs
-- **Get Product By ID (GraphQL)**
-
-    API to get a product by its `id` using GraphQL
-    
-    Endpoint: `http://localhost:8001/query`
-
-    ```graphql
-    query GetProduct($productId: Int!) {
-      product(id: $productId) {
-        id
-        name
-        price
-      }
-    }
-    ```
 
 ### 🛒 Order APIs
 - **Create Order**
@@ -99,6 +82,42 @@ WatchCommerce is a lightweight, containerized e-commerce API built with **Golang
     ```sh
     curl --location --request GET 'localhost:8000/api/v1/order/get?id=1'
     ```
+
+### GraphQL APIs
+
+Endpoint: `http://localhost:8001/query`
+
+- **Get Product By ID**
+
+  API to get a product by its `id`
+
+
+  ```graphql
+  query GetProduct($productId: Int!) {
+      product(id: $productId) {
+        id
+        name
+        price
+      }
+  }
+  ```
+
+
+- **Get Product By BrandID**
+
+  API to get a product by `brandID`
+
+
+  ```graphql
+  query GetProductsByBrand {
+    productsByBrand(brandID: 1) {
+        id
+        name
+        price
+        brandID
+    }
+  }
+  ```
 
 
 ## 🚀 Getting Started
