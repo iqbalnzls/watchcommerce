@@ -11,16 +11,31 @@ import (
 	"time"
 
 	"github.com/99designs/gqlgen/graphql/handler"
+	"github.com/99designs/gqlgen/graphql/handler/transport"
 	"github.com/99designs/gqlgen/graphql/playground"
+	"github.com/gorilla/websocket"
 
 	"github.com/iqbalnzls/watchcommerce/src/delivery"
 )
 
 func StartGraphQLServer(mux *http.ServeMux, container *delivery.Container) {
-	srv := handler.New(NewExecutableSchema(Config{Resolvers: &Resolver{
-		productService: container.ProductService,
-		v:              container.Validator,
-	}}))
+	srv := handler.New(NewExecutableSchema(
+		Config{
+			Resolvers: SetupResolver(container.ProductService, container.BrandService, container.Validator),
+		}),
+	)
+
+	// Register transports explicitly
+	srv.AddTransport(transport.POST{})
+	srv.AddTransport(transport.Options{})
+	srv.AddTransport(transport.GET{})
+	srv.AddTransport(transport.Websocket{
+		Upgrader: websocket.Upgrader{
+			CheckOrigin: func(r *http.Request) bool {
+				return true
+			},
+		},
+	})
 
 	mux.Handle("/", playground.Handler("GraphQL playground", "/query"))
 	mux.Handle("/query", SetupMiddleware(srv))

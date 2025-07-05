@@ -2,6 +2,13 @@
 
 package model
 
+type Brand struct {
+	Name string `json:"name"`
+}
+
+type Mutation struct {
+}
+
 type Product struct {
 	ID       int    `json:"id"`
 	Name     string `json:"name"`

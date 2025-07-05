@@ -10,7 +10,15 @@ type Product {
   quantity: Int!
 }
 
+type Brand {
+  name: String!
+}
+
 type Query {
-  product(id: Int!): Product
-  productsByBrand(brandID: Int!): [Product!]! 
+  getProduct(id: Int!): Product!
+  getProductsByBrandId(brandID: Int!): [Product!]!
+}
+
+type Mutation {
+  createBrand(name: String!): Brand
 }
