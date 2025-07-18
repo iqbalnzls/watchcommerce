@@ -32,6 +32,31 @@ func (r *mutationResolver) CreateBrand(ctx context.Context, name string) (resp *
 	return
 }
 
+// CreateProduct is the resolver for the createProduct field.
+func (r *mutationResolver) CreateProduct(ctx context.Context, input model.ProductInput) (resp *model.Product, err error) {
+	appCtx := appContext.ParsingAppContext(ctx)
+
+	req := toCreateProductRequest(input)
+
+	if err = r.Resolver.v.Validate(req); err != nil {
+		return
+	}
+
+	if err = r.Resolver.productService.Save(appCtx, req); err != nil {
+		return
+	}
+
+	resp = &model.Product{
+		Name:     input.Name,
+		Price:    input.Price,
+		Quantity: input.Quantity,
+	}
+
+	appCtx.Logger.FinishedRequest(resp)
+
+	return
+}
+
 // GetProduct is the resolver for the getProduct field.
 func (r *queryResolver) GetProduct(ctx context.Context, id int) (resp *model.Product, err error) {
 	appCtx := appContext.ParsingAppContext(ctx)

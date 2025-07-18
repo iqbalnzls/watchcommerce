@@ -182,11 +182,17 @@ func Test_productService_GetByBrandID(t *testing.T) {
 										ID:      1,
 										BrandID: 1,
 										Name:    "cx-100",
+										Brand: domainProduct.Brand{
+											Name: "rolex",
+										},
 									},
 									{
 										ID:      2,
 										BrandID: 1,
 										Name:    "cx-200",
+										Brand: domainProduct.Brand{
+											Name: "rolex",
+										},
 									},
 								},
 							},
@@ -195,14 +201,14 @@ func Test_productService_GetByBrandID(t *testing.T) {
 				},
 				wantResp: []dto.GetProductResponse{
 					{
-						ID:      1,
-						Name:    "cx-100",
-						BrandID: 1,
+						ID:        1,
+						Name:      "cx-100",
+						BrandName: "rolex",
 					},
 					{
-						ID:      2,
-						Name:    "cx-200",
-						BrandID: 1,
+						ID:        2,
+						Name:      "cx-200",
+						BrandName: "rolex",
 					},
 				},
 			},

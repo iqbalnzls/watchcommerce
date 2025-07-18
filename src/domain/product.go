@@ -10,4 +10,5 @@ type Product struct {
 	Quantity  int64
 	CreatedAt time.Time
 	UpdatedAt time.Time
+	Brand     Brand
 }

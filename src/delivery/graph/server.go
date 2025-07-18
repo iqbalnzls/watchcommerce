@@ -5,9 +5,6 @@ import (
 	"errors"
 	"log"
 	"net/http"
-	"os"
-	"os/signal"
-	"syscall"
 	"time"
 
 	"github.com/99designs/gqlgen/graphql/handler"
@@ -18,7 +15,9 @@ import (
 	"github.com/iqbalnzls/watchcommerce/src/delivery"
 )
 
-func StartGraphQLServer(mux *http.ServeMux, container *delivery.Container) {
+func StartGraphQLServer(ctx context.Context, container *delivery.Container) {
+	mux := http.NewServeMux()
+
 	srv := handler.New(NewExecutableSchema(
 		Config{
 			Resolvers: SetupResolver(container.ProductService, container.BrandService, container.Validator),
@@ -45,9 +44,6 @@ func StartGraphQLServer(mux *http.ServeMux, container *delivery.Container) {
 		Handler: mux,
 	}
 
-	done := make(chan os.Signal, 1)
-	signal.Notify(done, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
-
 	go func() {
 		if err := server.ListenAndServe(); err != nil && errors.Is(err, http.ErrServerClosed) {
 			log.Fatalf("listen: %s\n", err)
@@ -55,14 +51,11 @@ func StartGraphQLServer(mux *http.ServeMux, container *delivery.Container) {
 	}()
 	log.Print("GraphQL Server Started on Port : ", container.Config.Apps.GraphQLPort)
 
-	<-done
+	<-ctx.Done()
 	log.Print("GraphQL Server Stopped")
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer func() {
-		// extra handling here
-		cancel()
-	}()
+	defer cancel()
 
 	if err := server.Shutdown(ctx); err != nil {
 		log.Fatalf("Server Shutdown Failed:%+v", err)

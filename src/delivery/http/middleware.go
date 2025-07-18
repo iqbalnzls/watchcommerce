@@ -15,7 +15,7 @@ import (
 
 type Middleware func(next http.HandlerFunc) http.HandlerFunc
 
-func SetupMiddleware() Middleware {
+func SetupMiddleware(ctx context.Context) Middleware {
 	return func(next http.HandlerFunc) http.HandlerFunc {
 		return func(w http.ResponseWriter, r *http.Request) {
 			if !isAuthSwaggerValid(r) {
@@ -40,7 +40,7 @@ func SetupMiddleware() Middleware {
 
 			appCtx.Logger.IncomingRequest()
 
-			cont := context.WithValue(r.Context(), constant.AppContext, appCtx)
+			cont := context.WithValue(ctx, constant.AppContext, appCtx)
 
 			next.ServeHTTP(w, r.WithContext(cont))
 		}

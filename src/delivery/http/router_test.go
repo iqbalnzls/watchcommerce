@@ -2,6 +2,7 @@ package http_test
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
@@ -20,6 +21,8 @@ import (
 )
 
 func TestSetupRouter(t *testing.T) {
+	c := context.Background()
+
 	var (
 		v              = validator.NewValidator()
 		brandService   = &mocksUsecaseBrand.BrandServiceIFaceMock{}
@@ -32,7 +35,7 @@ func TestSetupRouter(t *testing.T) {
 			Validator:      v,
 		}
 		mux        = http.NewServeMux()
-		middleware = inHttp.SetupMiddleware()
+		middleware = inHttp.SetupMiddleware(c)
 	)
 
 	inHttp.SetupRouter(mux, middleware, inHttp.SetupHandler(container))

@@ -5,7 +5,14 @@
 type Product {
   id: Int!
   name: String!
-  brandID: Int!
+  brandName: String!
+  price: Int!
+  quantity: Int!
+}
+
+input ProductInput {
+  brandId: Int!
+  name: String!
   price: Int!
   quantity: Int!
 }
@@ -20,5 +27,6 @@ type Query {
 }
 
 type Mutation {
-  createBrand(name: String!): Brand
+  createBrand(name: String!): Brand!
+  createProduct(input: ProductInput!): Product!
 }

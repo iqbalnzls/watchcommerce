@@ -7,11 +7,11 @@ import (
 
 func toProduct(d dto.GetProductResponse) *model.Product {
 	return &model.Product{
-		ID:       int(d.ID),
-		Name:     d.Name,
-		BrandID:  int(d.BrandID),
-		Price:    int(d.Price),
-		Quantity: int(d.Quantity),
+		ID:        int(d.ID),
+		Name:      d.Name,
+		BrandName: d.BrandName,
+		Price:     int(d.Price),
+		Quantity:  int(d.Quantity),
 	}
 }
 
@@ -46,5 +46,14 @@ func toProductsBrand(slice []dto.GetProductResponse) []*model.Product {
 func toBrand(name string) *model.Brand {
 	return &model.Brand{
 		Name: name,
+	}
+}
+
+func toCreateProductRequest(in model.ProductInput) *dto.CreateProductRequest {
+	return &dto.CreateProductRequest{
+		BrandID:  int64(in.BrandID),
+		Name:     in.Name,
+		Price:    int64(in.Price),
+		Quantity: int64(in.Quantity),
 	}
 }

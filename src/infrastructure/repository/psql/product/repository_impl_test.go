@@ -106,8 +106,9 @@ func Test_productRepo_GetByBrandID(t *testing.T) {
 				name: "success",
 				args: args{
 					resp: resp{
-						rows: sqlmock.NewRows([]string{"id", "brand_id", "name", "price", "quantity", "created_at", "updated_at"}).
-							AddRow(1, 12, "daytona", 1200, 12, tn, tn),
+						rows: sqlmock.NewRows([]string{"p.id", "p.brand_id", "p.name", "p.price", "p.quantity",
+							"p.created_at", "p.updated_at", "b.id", "b.name", "b.created_at", "b.updated_at"}).
+							AddRow(1, 12, "daytona", 1200, 12, tn, tn, 3, "rolex", tn, tn),
 					},
 				},
 				wantArgs: true,
@@ -120,6 +121,12 @@ func Test_productRepo_GetByBrandID(t *testing.T) {
 						Quantity:  12,
 						CreatedAt: tn,
 						UpdatedAt: tn,
+						Brand: domainProduct.Brand{
+							ID:        03,
+							Name:      "rolex",
+							CreatedAt: tn,
+							UpdatedAt: tn,
+						},
 					},
 				},
 			},
@@ -186,8 +193,9 @@ func Test_productRepo_GetByID(t *testing.T) {
 				name: "success",
 				args: args{
 					resp: resp{
-						rows: sqlmock.NewRows([]string{"id", "brand_id", "name", "price", "quantity", "created_at", "updated_at"}).
-							AddRow(12, 34, "g-shock", 1200, 12, tn, tn),
+						rows: sqlmock.NewRows([]string{"p.id", "p.brand_id", "p.name", "p.price", "p.quantity",
+							"p.created_at", "p.updated_at", "b.id", "b.name", "b.created_at", "b.updated_at"}).
+							AddRow(12, 34, "g-shock", 1200, 12, tn, tn, 2, "casio", tn, tn),
 					},
 				},
 				wantDomain: &domainProduct.Product{
@@ -198,6 +206,12 @@ func Test_productRepo_GetByID(t *testing.T) {
 					Quantity:  12,
 					CreatedAt: tn,
 					UpdatedAt: tn,
+					Brand: domainProduct.Brand{
+						ID:        2,
+						Name:      "casio",
+						CreatedAt: tn,
+						UpdatedAt: tn,
+					},
 				},
 			},
 		}

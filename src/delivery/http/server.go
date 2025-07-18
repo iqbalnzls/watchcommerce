@@ -5,24 +5,20 @@ import (
 	"errors"
 	"log"
 	"net/http"
-	"os"
-	"os/signal"
-	"syscall"
 	"time"
 
 	"github.com/iqbalnzls/watchcommerce/src/delivery"
 )
 
-func StartHttpServer(mux *http.ServeMux, container *delivery.Container) {
-	SetupRouter(mux, SetupMiddleware(), SetupHandler(container))
+func StartHttpServer(ctx context.Context, container *delivery.Container) {
+	mux := http.NewServeMux()
+
+	SetupRouter(mux, SetupMiddleware(ctx), SetupHandler(container))
 
 	srv := http.Server{
 		Addr:    container.Config.Apps.GetHttpAddress(),
 		Handler: mux,
 	}
-
-	done := make(chan os.Signal, 1)
-	signal.Notify(done, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
 
 	go func() {
 		if err := srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
@@ -31,14 +27,11 @@ func StartHttpServer(mux *http.ServeMux, container *delivery.Container) {
 	}()
 	log.Print("Http Server Started on Port : ", container.Config.Apps.HttpPort)
 
-	<-done
+	<-ctx.Done()
 	log.Print("Http Server Stopped")
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer func() {
-		// extra handling here
-		cancel()
-	}()
+	defer cancel()
 
 	if err := srv.Shutdown(ctx); err != nil {
 		log.Fatalf("Server Shutdown Failed:%+v", err)

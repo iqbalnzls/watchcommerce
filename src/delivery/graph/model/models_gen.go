@@ -10,9 +10,16 @@ type Mutation struct {
 }
 
 type Product struct {
-	ID       int    `json:"id"`
+	ID        int    `json:"id"`
+	Name      string `json:"name"`
+	BrandName string `json:"brandName"`
+	Price     int    `json:"price"`
+	Quantity  int    `json:"quantity"`
+}
+
+type ProductInput struct {
+	BrandID  int    `json:"brandId"`
 	Name     string `json:"name"`
-	BrandID  int    `json:"brandID"`
 	Price    int    `json:"price"`
 	Quantity int    `json:"quantity"`
 }

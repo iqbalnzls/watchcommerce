@@ -38,11 +38,26 @@ func (r *productRepo) Save(appCtx *appContext.AppContext, domain *domainProduct.
 
 func (r *productRepo) GetByID(appCtx *appContext.AppContext, id int64) (domain *domainProduct.Product, err error) {
 	var (
-		query   = `SELECT id, brand_id, name, price, quantity, created_at, updated_at FROM commerce.product WHERE id = $1`
+		query = `SELECT p.id,
+       p.brand_id,
+       p.name,
+       p.price,
+       p.quantity,
+       p.created_at,
+       p.updated_at,
+       b.id,
+       b.name,
+       b.created_at,
+       b.updated_at
+FROM commerce.product p
+         JOIN commerce.brand b on b.id = p.brand_id
+WHERE p.id = $1;`
 		product domainProduct.Product
 	)
 
-	if err = r.db.QueryRow(query, id).Scan(&product.ID, &product.BrandID, &product.Name, &product.Price, &product.Quantity, &product.CreatedAt, &product.UpdatedAt); err != nil {
+	if err = r.db.QueryRow(query, id).Scan(&product.ID, &product.BrandID, &product.Name, &product.Price,
+		&product.Quantity, &product.CreatedAt, &product.UpdatedAt, &product.Brand.ID, &product.Brand.Name,
+		&product.Brand.CreatedAt, &product.Brand.UpdatedAt); err != nil {
 		appCtx.Logger.Error(err.Error())
 		if errors.Is(err, sql.ErrNoRows) {
 			err = errors.New(constant.ErrorDataNotFound)
@@ -57,8 +72,21 @@ func (r *productRepo) GetByID(appCtx *appContext.AppContext, id int64) (domain *
 	return
 }
 
-func (r *productRepo) GetByBrandID(appCtx *appContext.AppContext, brandID int64) (domains []*domainProduct.Product, err error) {
-	var query = `SELECT id, brand_id, name, price, quantity, created_at, updated_at FROM commerce.product WHERE brand_id = $1`
+func (r *productRepo) GetByBrandID(appCtx *appContext.AppContext, brandID int64) (products []*domainProduct.Product, err error) {
+	var query = `SELECT p.id,
+       p.brand_id,
+       p.name,
+       p.price,
+       p.quantity,
+       p.created_at,
+       p.updated_at,
+       b.id,
+       b.name,
+       b.created_at,
+       b.updated_at
+FROM commerce.product p
+         JOIN commerce.brand b on p.brand_id = b.id
+WHERE p.brand_id = $1`
 
 	rows, err := r.db.Query(query, brandID)
 	if err != nil {
@@ -68,17 +96,19 @@ func (r *productRepo) GetByBrandID(appCtx *appContext.AppContext, brandID int64)
 	}
 
 	for rows.Next() {
-		var domain domainProduct.Product
-		if err = rows.Scan(&domain.ID, &domain.BrandID, &domain.Name, &domain.Price, &domain.Quantity, &domain.CreatedAt, &domain.UpdatedAt); err != nil {
+		var product domainProduct.Product
+		if err = rows.Scan(&product.ID, &product.BrandID, &product.Name, &product.Price,
+			&product.Quantity, &product.CreatedAt, &product.UpdatedAt, &product.Brand.ID, &product.Brand.Name,
+			&product.Brand.CreatedAt, &product.Brand.UpdatedAt); err != nil {
 			appCtx.Logger.Error(err.Error())
 			err = errors.New(constant.ErrorDatabaseProblem)
 			return
 		}
 
-		domains = append(domains, &domain)
+		products = append(products, &product)
 	}
 
-	if len(domains) == 0 {
+	if len(products) == 0 {
 		err = errors.New(constant.ErrorDataNotFound)
 		appCtx.Logger.Error(err.Error())
 		return

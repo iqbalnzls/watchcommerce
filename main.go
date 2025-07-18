@@ -1,8 +1,10 @@
 package main
 
 import (
+	"context"
 	"fmt"
-	"net/http"
+	"os"
+	"os/signal"
 
 	"github.com/mbndr/figlet4go"
 
@@ -27,15 +29,30 @@ import (
 // @host localhost:8000
 // @BasePath /
 func main() {
-	mux := http.NewServeMux()
+	// Create a context that is cancelled on interrupt
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
 
+	// Channel to listen for interrupt signals
+	signalChan := make(chan os.Signal, 1)
+	signal.Notify(signalChan, os.Interrupt, os.Kill)
+
+	// Init dependencies
 	container := delivery.SetupContainer()
 
 	fmt.Print(showBanner())
 	fmt.Printf(constant.AppVersion + "\n\n")
 
-	go inGraphQL.StartGraphQLServer(mux, container)
-	inHttp.StartHttpServer(mux, container)
+	// Start graphql and http servers
+	go inGraphQL.StartGraphQLServer(ctx, container)
+	go inHttp.StartHttpServer(ctx, container)
+
+	// Block until an interrupt signal is received
+	<-signalChan
+
+	// Cancel the context (notify all goroutines to stop)
+	cancel()
+
 }
 
 func showBanner() string {

@@ -142,9 +142,9 @@ func Test_productHandler_Get(t *testing.T) {
 						productService: productService{
 							get: get{
 								data: dto.GetProductResponse{
-									ID:      1,
-									Name:    "cx-100",
-									BrandID: 1,
+									ID:        1,
+									Name:      "cx-100",
+									BrandName: "rolex",
 								},
 							},
 						},
@@ -251,11 +251,11 @@ func Test_productHandler_GetByBrandID(t *testing.T) {
 						getByBrandID: getByBrandID{
 							data: []dto.GetProductResponse{
 								{
-									ID:       1,
-									Name:     "cx-900",
-									BrandID:  2,
-									Price:    1000,
-									Quantity: 12,
+									ID:        1,
+									Name:      "cx-900",
+									BrandName: "rolex",
+									Price:     1000,
+									Quantity:  12,
 								},
 							},
 						},

@@ -12,11 +12,11 @@ type GetProductRequest struct {
 }
 
 type GetProductResponse struct {
-	ID       int64  `json:"id" example:"1"`
-	Name     string `json:"name" example:"daytona"`
-	BrandID  int64  `json:"brandID" example:"1"`
-	Price    int64  `json:"price" example:"1000"`
-	Quantity int64  `json:"quantity" example:"3"`
+	ID        int64  `json:"id" example:"1"`
+	Name      string `json:"name" example:"daytona"`
+	BrandName string `json:"brandName" example:"rolex"`
+	Price     int64  `json:"price" example:"1000"`
+	Quantity  int64  `json:"quantity" example:"3"`
 }
 
 type GetProductByBrandIDRequest struct {
